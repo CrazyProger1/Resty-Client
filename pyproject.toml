@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "RestyClient"
+version = "0.0.1"
+authors = [
+    { name = "crazyproger1", email = "crazyproger1@gmail.com" },
+]
+description = "RestyClient is a simple, easy-to-use Python library for interacting with REST APIs usingPydantic's powerful data validation and deserialization tools."
+readme = "README.md"
+requires-python = ">=3.7"
+license = { text = "MIT" }
+dependencies = [
+    "pydantic",
+]
+
+[tool.ruff]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv"
+]
+
+[tool.mypy]
+files = ["resty"]
+show_error_codes = true
+strict = true
+
