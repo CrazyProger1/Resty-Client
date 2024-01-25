@@ -36,5 +36,22 @@ class RESTClient(BaseRESTClient):
             raise TypeError('request is not of type Request')
 
         expected_status: int = kwargs.pop('expected_status', 200)
-
         await self._call_pre_middlewares(request=request, **kwargs)
+
+        response = await self._xclient.request(
+            method=request.method.value,
+            url=request.url,
+            headers=request.headers,
+            data=request.data,
+            params=request.params
+        )
+
+        if response.status_code != expected_status:
+            pass
+        response = Response(
+            request=request,
+            status=response.status_code,
+            data=response.json()
+        )
+        await self._call_post_middlewares(response=response, **kwargs)
+        return response

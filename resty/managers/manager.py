@@ -11,7 +11,8 @@ from resty.types import (
     Response
 )
 from resty.enums import (
-    Endpoint
+    Endpoint,
+    Method
 )
 
 
@@ -32,13 +33,17 @@ class Manager(BaseManager):
     @classmethod
     async def read(cls, client: BaseRESTClient, **kwargs) -> Iterable[BaseModel]:
         request = Request(
-            method='GET',
+            method=Method.GET,
             url=cls._get_endpoint(Endpoint.READ),
         )
         response = await client.request(
             request=request,
             **kwargs
         )
+        result = []
+        for dataset in response.data:
+            result.append(cls.serializer.deserialize(dataset))
+        return result
 
     @classmethod
     async def read_one(cls, client: BaseRESTClient, pk: any, **kwargs) -> BaseModel:

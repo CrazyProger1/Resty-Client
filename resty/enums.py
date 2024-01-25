@@ -12,3 +12,11 @@ class Endpoint(str, Enum):
 
 class Field(str, Enum):
     PRIMARY = 'primary'
+
+
+class Method(str, Enum):
+    GET = 'GET'
+    POST = 'POST'
+    PATCH = 'PATCH'
+    PUT = 'PUT'
+    DELETE = 'DELETE'
