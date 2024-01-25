@@ -5,6 +5,9 @@ description = "RestyClient is a simple, easy-to-use Python library for interacti
 authors = ["CrazyProger1 <crazyproger1@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [
+    { include = "resty"},
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
