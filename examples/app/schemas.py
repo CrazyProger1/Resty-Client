@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 
 
-class User(BaseModel):
-    username: str
-    password: str | None = None
-    email: str
+class Product(BaseModel):
+    id: int | None = None
+    name: str
+    description: str
+    code: str
+
