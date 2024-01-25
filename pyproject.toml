@@ -6,7 +6,7 @@ authors = ["CrazyProger1 <crazyproger1@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [
-    { include = "resty"},
+    { include = "resty" },
 ]
 
 [tool.poetry.dependencies]
@@ -16,7 +16,7 @@ pydantic = "^2.5.3"
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.8.0"
 ruff = "^0.1.14"
-
+pytest = "^7.4.4"
 
 [tool.ruff]
 exclude = [
