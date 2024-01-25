@@ -50,7 +50,6 @@ class BaseManager:
     serializer: type[BaseSerializer]
     endpoints: dict[Endpoint, str]
     fields: dict[Field, str]
-    pk_field: str
 
     @classmethod
     @abstractmethod

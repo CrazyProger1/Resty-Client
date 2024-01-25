@@ -2,6 +2,9 @@ from dataclasses import (
     dataclass,
     field
 )
+
+from pydantic import BaseModel
+
 from resty.enums import (
     Method
 )

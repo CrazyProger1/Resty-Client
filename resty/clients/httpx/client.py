@@ -1,5 +1,11 @@
+import json.decoder
+
 import httpx
 
+from resty.constants import (
+    DEFAULT_CODES,
+    STATUS_ERRORS
+)
 from resty.types import (
     BaseRESTClient,
     Request,
@@ -8,6 +14,7 @@ from resty.types import (
     BasePreRequestMiddleware,
     BasePostRequestMiddleware
 )
+from resty.exceptions import HTTPError
 
 
 class RESTClient(BaseRESTClient):
@@ -35,10 +42,10 @@ class RESTClient(BaseRESTClient):
         if not isinstance(request, Request):
             raise TypeError('request is not of type Request')
 
-        expected_status: int = kwargs.pop('expected_status', 200)
+        expected_status: int = kwargs.pop('expected_status', DEFAULT_CODES.get(request.method))
         await self._call_pre_middlewares(request=request, **kwargs)
 
-        response = await self._xclient.request(
+        xresponse = await self._xclient.request(
             method=request.method.value,
             url=request.url,
             headers=request.headers,
@@ -46,12 +53,27 @@ class RESTClient(BaseRESTClient):
             params=request.params
         )
 
-        if response.status_code != expected_status:
-            pass
+        status = xresponse.status_code
+
+        if status != expected_status:
+            exc: type[HTTPError] = STATUS_ERRORS.get(status, HTTPError)
+            raise exc(
+                request=request,
+                status=status
+            )
+
+        try:
+            data = xresponse.json()
+        except json.decoder.JSONDecodeError:
+            data = None
+
+            if status != 204:
+                raise
+
         response = Response(
             request=request,
-            status=response.status_code,
-            data=response.json()
+            status=status,
+            data=data
         )
         await self._call_post_middlewares(response=response, **kwargs)
         return response
