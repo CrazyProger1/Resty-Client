@@ -31,8 +31,3 @@ class MethodNotAllowedError(HTTPError):
 
 class InternalServerError(HTTPError):
     pass
-
-
-class ParsingError(Exception):
-    def __init__(self, ):
-        pass

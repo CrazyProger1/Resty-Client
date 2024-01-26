@@ -111,10 +111,10 @@ async def main():
 
     # Update
     my_product.description = 'QWERTY'
-    await ProductManger.update(rest_client, my_product)
+    await ProductManager.update(rest_client, my_product)
 
     # Delete
-    await ProductManager.delete(rest_client, 1)
+    await ProductManager.delete(rest_client, my_product.id)
 ```
 
 ## Status

@@ -15,8 +15,7 @@ from resty.types import (
     BaseMiddlewareManager
 )
 from resty.exceptions import (
-    HTTPError,
-    ParsingError
+    HTTPError
 )
 from resty.middlewares import MiddlewareManager
 
@@ -25,17 +24,17 @@ class RESTClient(BaseRESTClient):
 
     def __init__(self, xclient: httpx.AsyncClient, middleware_manager: BaseMiddlewareManager = None):
         self._xclient = xclient
-        self._middleware_manager = middleware_manager or MiddlewareManager()
+        self._middleware_manager = middleware_manager or MiddlewareManager(
+            default_middlewares=None,
+        )
 
     @staticmethod
     def _parse_xresponse(xresponse: httpx.Response) -> dict | list | None:
         try:
             data = xresponse.json()
         except json.decoder.JSONDecodeError:
-            data = None
+            data = {}
 
-            if xresponse.status_code != 204:
-                raise ParsingError()
         return data
 
     @staticmethod
@@ -59,6 +58,7 @@ class RESTClient(BaseRESTClient):
             raise TypeError('request is not of type Request')
 
         expected_status: int = kwargs.pop('expected_status', DEFAULT_CODES.get(request.method))
+        check_status: bool = kwargs.pop('check_status', True)
 
         if not isinstance(expected_status, (int, Container[int])):
             raise TypeError('expected status should be type of int or Container[int]')
@@ -78,12 +78,13 @@ class RESTClient(BaseRESTClient):
 
         status = xresponse.status_code
 
-        self._check_status(
-            status=status,
-            expected_status=expected_status,
-            request=request,
-            url=str(xresponse.url)
-        )
+        if check_status:
+            self._check_status(
+                status=status,
+                expected_status=expected_status,
+                request=request,
+                url=str(xresponse.url)
+            )
 
         response = Response(
             request=request,
