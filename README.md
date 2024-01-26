@@ -8,7 +8,6 @@
 <a href="https://github.com/CrazyProger1/RestyClient/blob/master/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/CrazyProger1/RestyClient"></a>
 <a href="https://github.com/CrazyProger1/RestyClient/releases/latest"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/CrazyProger1/RestyClient"></a>
 <a href="https://pypi.org/project/resty-client/"><img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/resty-client"></a>
-<a><img src="https://img.shields.io/pypi/status/resty-client" alt="Status"></a>
 </p>
 
 RestyClient is a simple, easy-to-use Python library for interacting with REST APIs using Pydantic's powerful data
@@ -119,7 +118,7 @@ async def main():
 
 ## Status
 
-``0.0.1`` - INDEV
+``0.0.1`` - RELEASED
 
 ## Licence
 
