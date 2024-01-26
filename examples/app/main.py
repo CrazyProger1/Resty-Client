@@ -2,8 +2,6 @@ import asyncio
 import httpx
 
 from resty.clients.httpx import RESTClient
-from resty.requests import Request
-from resty.enums import Method
 
 from managers import ProductManager
 
