@@ -26,6 +26,17 @@ class BasePostRequestMiddleware(BaseMiddleware):
     async def handle_response(self, response: Response, **kwargs): ...
 
 
+class BaseMiddlewareManager(ABC):
+    @abstractmethod
+    async def call_pre_middlewares(self, request: Request, **kwargs): ...
+
+    @abstractmethod
+    async def call_post_middlewares(self, response: Response, **kwargs): ...
+
+    @abstractmethod
+    def add_middleware(self, middleware: BaseMiddleware): ...
+
+
 class BaseRESTClient(ABC):
     @abstractmethod
     def add_middleware(self, middleware: BaseMiddleware): ...

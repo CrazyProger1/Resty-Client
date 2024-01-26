@@ -33,6 +33,7 @@ class Manager(BaseManager):
     @classmethod
     async def create(cls, client: BaseRESTClient, obj: BaseModel, **kwargs) -> BaseModel:
         request = Request(
+            schema=cls.serializer.schema,
             method=Method.POST,
             url=cls._get_endpoint(Endpoint.CREATE),
             data=cls.serializer.serialize(obj=obj)
@@ -50,6 +51,7 @@ class Manager(BaseManager):
     @classmethod
     async def read(cls, client: BaseRESTClient, **kwargs) -> Iterable[BaseModel]:
         request = Request(
+            schema=cls.serializer.schema,
             method=Method.GET,
             url=cls._get_endpoint(Endpoint.READ),
         )
@@ -65,6 +67,7 @@ class Manager(BaseManager):
     @classmethod
     async def read_one(cls, client: BaseRESTClient, pk: any, **kwargs) -> BaseModel:
         request = Request(
+            schema=cls.serializer.schema,
             method=Method.GET,
             url=cls._get_endpoint(Endpoint.READ_ONE).format(pk=pk),
         )
@@ -80,10 +83,13 @@ class Manager(BaseManager):
         pk_field = cls._get_pk_field()
         pk = getattr(obj, pk_field)
 
+        data = cls.serializer.serialize(obj=obj)
+
         request = Request(
+            schema=cls.serializer.schema,
             method=Method.PATCH,
             url=cls._get_endpoint(Endpoint.UPDATE).format(pk=pk),
-            data=cls.serializer.serialize(obj=obj)
+            data=data
         )
         await client.request(
             request=request,
@@ -93,6 +99,7 @@ class Manager(BaseManager):
     @classmethod
     async def delete(cls, client: BaseRESTClient, pk: any, **kwargs) -> None:
         request = Request(
+            schema=cls.serializer.schema,
             method=Method.DELETE,
             url=cls._get_endpoint(Endpoint.DELETE).format(pk=pk),
         )

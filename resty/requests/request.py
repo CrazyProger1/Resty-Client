@@ -12,8 +12,12 @@ from resty.enums import (
 
 @dataclass
 class Request:
+    schema: type[BaseModel]
     url: str
     method: Method
-    params: dict = field(default_factory=dict)
     data: dict = None
+    timeout: int = None
+    params: dict = field(default_factory=dict)
     headers: dict = field(default_factory=dict)
+    cookies: dict[str, str] = field(default_factory=dict)
+    redirects: bool = False
