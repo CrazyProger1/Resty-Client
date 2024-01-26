@@ -7,8 +7,10 @@ from resty.types import (
     BasePostRequestMiddleware
 )
 
-from resty.requests import Request
-from resty.responses import Response
+from resty.types import (
+    Request,
+    Response
+)
 
 
 class MiddlewareManager(BaseMiddlewareManager):

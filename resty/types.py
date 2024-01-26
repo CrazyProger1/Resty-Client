@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
-
 from typing import Iterable
+from dataclasses import (
+    dataclass,
+    field
+)
 
 from pydantic import BaseModel
 
@@ -8,9 +11,28 @@ from resty.enums import (
     Endpoint,
     Field
 )
-from resty.requests import Request
-from resty.responses import Response
+from resty.enums import (
+    Method
+)
 
+
+@dataclass
+class Request:
+    url: str
+    method: Method
+    data: dict = None
+    timeout: int = None
+    params: dict = field(default_factory=dict)
+    headers: dict = field(default_factory=dict)
+    cookies: dict = field(default_factory=dict)
+    redirects: bool = False
+
+
+@dataclass
+class Response:
+    request: Request
+    status: int
+    data: dict = None
 
 
 class BaseMiddleware(ABC):
@@ -82,3 +104,4 @@ class BaseManager:
     @classmethod
     @abstractmethod
     async def delete(cls, client: BaseRESTClient, pk: any, **kwargs) -> None:  ...
+

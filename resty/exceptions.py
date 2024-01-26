@@ -1,4 +1,4 @@
-from resty.requests import Request
+from resty.types import Request
 
 
 class HTTPError(Exception):

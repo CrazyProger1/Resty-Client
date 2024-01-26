@@ -1,9 +1,7 @@
 from .manager import MiddlewareManager
-from .pagination import PaginationMiddleware
-from .filter import FilterMiddleware
+from .types import BasePaginationMiddleware
 
 __all__ = [
     'MiddlewareManager',
-    'PaginationMiddleware',
-    'FilterMiddleware'
+    'BasePaginationMiddleware'
 ]
