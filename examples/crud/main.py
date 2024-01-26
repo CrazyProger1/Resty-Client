@@ -18,7 +18,7 @@ async def main():
     product = Product(
         name='My Product',
         description='My Desc',
-        code='123W31QQ'
+        code='123W31QQW'
     )
 
     # Create
