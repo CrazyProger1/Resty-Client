@@ -31,11 +31,27 @@ class Manager(BaseManager):
         return cls.fields.get(Field.PRIMARY)
 
     @classmethod
+    def _get_request_kwargs(cls, method: Method, url: str, data: dict = None, kwargs: dict = None) -> dict:
+        return {
+            'method': method,
+            'url': kwargs.pop('url', url),
+            'data': data,
+            'headers': kwargs.pop('headers', {}),
+            'params': kwargs.pop('params', {}),
+            'cookies': kwargs.pop('cookies', {}),
+            'redirects': kwargs.pop('redirects', False),
+            'timeout': kwargs.pop('timeout', None),
+        }
+
+    @classmethod
     async def create(cls, client: BaseRESTClient, obj: BaseModel, **kwargs) -> BaseModel:
         request = Request(
-            method=Method.POST,
-            url=cls._get_endpoint(Endpoint.CREATE),
-            data=cls.serializer.serialize(obj=obj)
+            **cls._get_request_kwargs(
+                method=Method.POST,
+                url=cls._get_endpoint(Endpoint.CREATE),
+                data=cls.serializer.serialize(obj=obj),
+                kwargs=kwargs,
+            ),
         )
 
         response = await client.request(
@@ -51,8 +67,11 @@ class Manager(BaseManager):
     @classmethod
     async def read(cls, client: BaseRESTClient, **kwargs) -> Iterable[BaseModel]:
         request = Request(
-            method=Method.GET,
-            url=cls._get_endpoint(Endpoint.READ),
+            **cls._get_request_kwargs(
+                method=Method.GET,
+                url=cls._get_endpoint(Endpoint.READ),
+                kwargs=kwargs
+            )
         )
         response = await client.request(
             request=request,
@@ -66,8 +85,11 @@ class Manager(BaseManager):
     @classmethod
     async def read_one(cls, client: BaseRESTClient, pk: any, **kwargs) -> BaseModel:
         request = Request(
-            method=Method.GET,
-            url=cls._get_endpoint(Endpoint.READ_ONE).format(pk=pk),
+            **cls._get_request_kwargs(
+                method=Method.GET,
+                url=cls._get_endpoint(Endpoint.READ_ONE).format(pk=pk),
+                kwargs=kwargs
+            )
         )
         response = await client.request(
             request=request,
@@ -84,9 +106,12 @@ class Manager(BaseManager):
         data = cls.serializer.serialize(obj=obj)
 
         request = Request(
-            method=Method.PATCH,
-            url=cls._get_endpoint(Endpoint.UPDATE).format(pk=pk),
-            data=data
+            **cls._get_request_kwargs(
+                method=Method.PATCH,
+                url=cls._get_endpoint(Endpoint.UPDATE).format(pk=pk),
+                data=data,
+                kwargs=kwargs
+            )
         )
         await client.request(
             request=request,
@@ -96,8 +121,11 @@ class Manager(BaseManager):
     @classmethod
     async def delete(cls, client: BaseRESTClient, pk: any, **kwargs) -> None:
         request = Request(
-            method=Method.DELETE,
-            url=cls._get_endpoint(Endpoint.DELETE).format(pk=pk),
+            **cls._get_request_kwargs(
+                method=Method.DELETE,
+                url=cls._get_endpoint(Endpoint.DELETE).format(pk=pk),
+                kwargs=kwargs
+            )
         )
         await client.request(
             request=request,

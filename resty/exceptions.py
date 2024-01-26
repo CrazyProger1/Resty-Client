@@ -2,10 +2,11 @@ from resty.types import Request
 
 
 class HTTPError(Exception):
-    def __init__(self, request: Request, status: int):
+    def __init__(self, request: Request, status: int, url: str):
         self.request = request
         self.status = status
-        super().__init__(f'{request.method.value}: {request.url} -> {status}')
+        self.url = url
+        super().__init__(f'{request.method.value}: {url} -> {status}')
 
 
 class BadRequestError(HTTPError):

@@ -39,7 +39,7 @@ class RESTClient(BaseRESTClient):
         return data
 
     @staticmethod
-    def _check_status(status: int, expected_status: int | Container[int], request: Request):
+    def _check_status(status: int, expected_status: int | Container[int], request: Request, url: str):
         if status != expected_status:
             if isinstance(expected_status, Container) and status in expected_status:
                 pass
@@ -47,7 +47,8 @@ class RESTClient(BaseRESTClient):
                 exc: type[HTTPError] = STATUS_ERRORS.get(status, HTTPError)
                 raise exc(
                     request=request,
-                    status=status
+                    status=status,
+                    url=url
                 )
 
     def add_middleware(self, middleware: BaseMiddleware):
@@ -76,10 +77,12 @@ class RESTClient(BaseRESTClient):
         )
 
         status = xresponse.status_code
+
         self._check_status(
             status=status,
             expected_status=expected_status,
-            request=request
+            request=request,
+            url=str(xresponse.url)
         )
 
         response = Response(
