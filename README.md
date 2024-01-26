@@ -13,7 +13,23 @@ RestyClient is a simple, easy-to-use Python library for interacting with REST AP
 validation and deserialization tools. This library provides an intuitive API that makes it easy to make HTTP requests
 and handle data on the client side.
 
+## Features
+
+- Middleware system, which allows you to implement any pagination, filtering or authentication.
+
 ## Installation
+
+Using pip:
+
+```shell
+pip install resty-client
+```
+
+Using Poetry:
+
+```shell
+poetry add resty-client
+```
 
 ## Getting-Started
 
@@ -99,7 +115,9 @@ async def main():
     await ProductManager.delete(rest_client, 1)
 ```
 
-## Features
+## Status
+
+``0.0.1`` - INDEV
 
 ## Licence
 
