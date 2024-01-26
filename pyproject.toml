@@ -1,21 +1,22 @@
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
-
-[project]
-name = "RestyClient"
+[tool.poetry]
+name = "resty-client"
 version = "0.0.1"
-authors = [
-    { name = "crazyproger1", email = "crazyproger1@gmail.com" },
-]
-description = "RestyClient is a simple, easy-to-use Python library for interacting with REST APIs usingPydantic's powerful data validation and deserialization tools."
+description = "RestyClient is a simple, easy-to-use Python library for interacting with REST APIs using Pydantic's powerful data validation and deserialization tools."
+authors = ["CrazyProger1 <crazyproger1@gmail.com>"]
+license = "MIT"
 readme = "README.md"
-requires-python = ">=3.7"
-license = { text = "MIT" }
-dependencies = [
-    "pydantic",
+packages = [
+    { include = "resty" },
 ]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pydantic = "^2.5.3"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.8.0"
+ruff = "^0.1.14"
+pytest = "^7.4.4"
 
 [tool.ruff]
 exclude = [
@@ -47,3 +48,8 @@ files = ["resty"]
 show_error_codes = true
 strict = true
 
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
