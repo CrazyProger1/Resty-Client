@@ -12,6 +12,7 @@ from resty.requests import Request
 from resty.responses import Response
 
 
+
 class BaseMiddleware(ABC):
     pass
 
