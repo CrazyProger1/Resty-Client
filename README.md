@@ -1,7 +1,7 @@
 # RestyClient
 
 <p align="center">
-<img src="docs/resty-cat.png" alt="resty lib logo">
+<img src="https://github.com/CrazyProger1/RestyClient/blob/master/docs/resty-cat.png" alt="resty lib logo">
 </p>
 
 <p align="center">
