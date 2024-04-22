@@ -164,3 +164,7 @@ cython_debug/
 
 # MyPy
 .mypy_cache
+
+
+# Test File
+main.py
