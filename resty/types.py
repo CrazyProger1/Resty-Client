@@ -1,19 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Iterable
-from dataclasses import (
-    dataclass,
-    field
-)
+from dataclasses import dataclass, field
 
 from pydantic import BaseModel
 
-from resty.enums import (
-    Endpoint,
-    Field
-)
-from resty.enums import (
-    Method
-)
+from resty.enums import Endpoint, Field
+from resty.enums import Method
 
 
 @dataclass
@@ -21,6 +13,7 @@ class Request:
     url: str
     method: Method
     data: dict = None
+    json: dict = None
     timeout: int = None
     params: dict = field(default_factory=dict)
     headers: dict = field(default_factory=dict)
@@ -69,15 +62,20 @@ class BaseRESTClient(ABC):
 
 
 class BaseSerializer:
-    schema: type[BaseModel]
+    schema: type[BaseModel] = None
+    schemas: dict[Endpoint, type[BaseModel]] = None
 
     @classmethod
     @abstractmethod
-    def serialize(cls, obj: BaseModel) -> dict: ...
+    def get_schema(cls, **context) -> type[BaseModel]: ...
 
     @classmethod
     @abstractmethod
-    def deserialize(cls, data: dict) -> BaseModel: ...
+    def serialize(cls, obj: BaseModel, **context) -> dict: ...
+
+    @classmethod
+    @abstractmethod
+    def deserialize(cls, data: dict, **context) -> BaseModel: ...
 
 
 class BaseManager:
@@ -87,7 +85,9 @@ class BaseManager:
 
     @classmethod
     @abstractmethod
-    async def create(cls, client: BaseRESTClient, obj: BaseModel, **kwargs) -> BaseModel: ...
+    async def create(
+            cls, client: BaseRESTClient, obj: BaseModel, **kwargs
+    ) -> BaseModel: ...
 
     @classmethod
     @abstractmethod
@@ -103,5 +103,4 @@ class BaseManager:
 
     @classmethod
     @abstractmethod
-    async def delete(cls, client: BaseRESTClient, pk: any, **kwargs) -> None:  ...
-
+    async def delete(cls, client: BaseRESTClient, pk: any, **kwargs) -> None: ...

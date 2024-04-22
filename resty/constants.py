@@ -5,15 +5,15 @@ from resty.exceptions import (
     UnauthorizedError,
     MethodNotAllowedError,
     InternalServerError,
-    ForbiddenError
+    ForbiddenError,
 )
 
 DEFAULT_CODES = {
     Method.GET: 200,
-    Method.POST: 201,
+    Method.POST: {201, 200},
     Method.PUT: 200,
     Method.PATCH: 200,
-    Method.DELETE: 204
+    Method.DELETE: {204, 200},
 }
 
 STATUS_ERRORS = {
@@ -22,5 +22,5 @@ STATUS_ERRORS = {
     403: ForbiddenError,
     404: NotFoundError,
     405: MethodNotAllowedError,
-    500: InternalServerError
+    500: InternalServerError,
 }

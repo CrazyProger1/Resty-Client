@@ -4,13 +4,10 @@ from resty.types import (
     BaseMiddlewareManager,
     BaseMiddleware,
     BasePreRequestMiddleware,
-    BasePostRequestMiddleware
+    BasePostRequestMiddleware,
 )
 
-from resty.types import (
-    Request,
-    Response
-)
+from resty.types import Request, Response
 
 
 class MiddlewareManager(BaseMiddlewareManager):
@@ -34,5 +31,5 @@ class MiddlewareManager(BaseMiddlewareManager):
 
     def add_middleware(self, middleware: BaseMiddleware):
         if not isinstance(middleware, BaseMiddleware):
-            raise TypeError('middleware is not of type BaseMiddleware')
+            raise TypeError("middleware is not of type BaseMiddleware")
         self._middlewares.append(middleware)

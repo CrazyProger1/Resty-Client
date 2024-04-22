@@ -1,9 +1,6 @@
 from .pagination import (
     DjangoLimitOffsetPaginationMiddleware,
-    DjangoPagePaginationMiddleware
+    DjangoPagePaginationMiddleware,
 )
 
-__all__ = [
-    'DjangoLimitOffsetPaginationMiddleware',
-    'DjangoPagePaginationMiddleware'
-]
+__all__ = ["DjangoLimitOffsetPaginationMiddleware", "DjangoPagePaginationMiddleware"]

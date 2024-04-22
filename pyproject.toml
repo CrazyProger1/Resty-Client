@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "resty-client"
-version = "0.0.1"
+version = "0.0.2"
 description = "RestyClient is a simple, easy-to-use Python library for interacting with REST APIs using Pydantic's powerful data validation and deserialization tools."
 authors = ["CrazyProger1 <crazyproger1@gmail.com>"]
 license = "MIT"
@@ -12,12 +12,12 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.12"
 pydantic = "^2.5.3"
-httpx = "^0.26.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.8.0"
-ruff = "^0.1.14"
 pytest = "^7.4.4"
+httpx = "^0.26.0"
+black = "^24.4.0"
 
 [tool.ruff]
 exclude = [
@@ -48,7 +48,6 @@ exclude = [
 files = ["resty"]
 show_error_codes = true
 strict = true
-
 
 
 [build-system]
