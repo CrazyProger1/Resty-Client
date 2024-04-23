@@ -30,7 +30,7 @@ class Serializer(BaseSerializer):
         schema = cls.get_schema(**context)
         if not isinstance(obj, schema):
             raise TypeError("Object must be of type {}".format(schema))
-        return obj.model_dump()
+        return schema.model_dump(obj)
 
     @classmethod
     def deserialize(cls, data: dict, **context) -> BaseModel:

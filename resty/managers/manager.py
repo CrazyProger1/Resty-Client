@@ -93,7 +93,7 @@ class Manager(BaseManager):
 
     @classmethod
     async def create(
-            cls, client: BaseRESTClient, obj: BaseModel, **kwargs
+        cls, client: BaseRESTClient, obj: BaseModel, **kwargs
     ) -> BaseModel:
 
         set_pk = kwargs.pop("set_pk", True)

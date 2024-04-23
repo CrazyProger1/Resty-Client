@@ -18,9 +18,9 @@ from resty.middlewares import MiddlewareManager
 class RESTClient(BaseRESTClient):
 
     def __init__(
-            self,
-            xclient: httpx.AsyncClient = None,
-            middleware_manager: BaseMiddlewareManager = None,
+        self,
+        xclient: httpx.AsyncClient = None,
+        middleware_manager: BaseMiddlewareManager = None,
     ):
 
         self._xclient = xclient or httpx.AsyncClient()
@@ -37,11 +37,11 @@ class RESTClient(BaseRESTClient):
 
     @staticmethod
     def _check_status(
-            status: int,
-            expected_status: int | Container[int],
-            request: Request,
-            url: str,
-            data: dict = None,
+        status: int,
+        expected_status: int | Container[int],
+        request: Request,
+        url: str,
+        data: dict = None,
     ):
         if status != expected_status:
             if isinstance(expected_status, Container) and status in expected_status:
