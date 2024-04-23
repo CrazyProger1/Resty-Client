@@ -2,6 +2,7 @@ import inspect
 
 from pydantic import BaseModel
 
+from resty.enums import Endpoint
 from resty.types import BaseSerializer
 
 
@@ -18,7 +19,10 @@ class Serializer(BaseSerializer):
         schema = cls.schema
 
         if cls.schemas is not None:
-            schema = cls.schemas.get(endpoint, cls.schema)
+            schema = cls.schemas.get(
+                endpoint,
+                cls.schema or cls.schemas.get(Endpoint.BASE)
+            )
 
         if schema is None:
             raise TypeError(f"Schema should be specified for {endpoint}")

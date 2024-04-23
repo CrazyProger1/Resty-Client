@@ -119,7 +119,7 @@ async def main():
 
 ## Status
 
-``0.0.2`` - **RELEASED**
+``0.0.3`` - **RELEASED**
 
 ## Licence
 

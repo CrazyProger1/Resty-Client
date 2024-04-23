@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "resty-client"
-version = "0.0.2"
+version = "0.0.3"
 description = "RestyClient is a simple, easy-to-use Python library for interacting with REST APIs using Pydantic's powerful data validation and deserialization tools."
 authors = ["CrazyProger1 <crazyproger1@gmail.com>"]
 license = "MIT"
