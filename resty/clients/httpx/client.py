@@ -18,13 +18,13 @@ from resty.middlewares import MiddlewareManager
 class RESTClient(BaseRESTClient):
 
     def __init__(
-            self,
-            xclient: httpx.AsyncClient,
-            middleware_manager: BaseMiddlewareManager = None,
+        self,
+        xclient: httpx.AsyncClient,
+        middleware_manager: BaseMiddlewareManager = None,
     ):
         self._xclient = xclient
         self._middleware_manager = middleware_manager or MiddlewareManager(
-            default_middlewares=None,
+            middlewares=None,
         )
 
     @staticmethod
@@ -38,8 +38,11 @@ class RESTClient(BaseRESTClient):
 
     @staticmethod
     def _check_status(
-            status: int, expected_status: int | Container[int], request: Request, url: str,
-            data: dict = None
+        status: int,
+        expected_status: int | Container[int],
+        request: Request,
+        url: str,
+        data: dict = None,
     ):
         if status != expected_status:
             if isinstance(expected_status, Container) and status in expected_status:
@@ -63,7 +66,9 @@ class RESTClient(BaseRESTClient):
         if not isinstance(expected_status, (int, Container)):
             raise TypeError("expected status should be type of int or Container[int]")
 
-        await self._middleware_manager.call_pre_middlewares(request=request, **kwargs)
+        await self._middleware_manager.call_request_middlewares(
+            request=request, **kwargs
+        )
 
         xresponse = await self._xclient.request(
             method=request.method.value,
@@ -95,7 +100,7 @@ class RESTClient(BaseRESTClient):
             data=data,
         )
 
-        await self._middleware_manager.call_post_middlewares(
+        await self._middleware_manager.call_response_middlewares(
             response=response, **kwargs
         )
 

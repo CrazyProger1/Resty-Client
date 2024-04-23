@@ -1,3 +1,3 @@
-from .manager import Manager
+from resty.managers.manager import Manager
 
 __all__ = ["Manager"]

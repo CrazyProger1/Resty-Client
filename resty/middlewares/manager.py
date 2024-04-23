@@ -3,30 +3,30 @@ from typing import Iterable
 from resty.types import (
     BaseMiddlewareManager,
     BaseMiddleware,
-    BasePreRequestMiddleware,
-    BasePostRequestMiddleware,
+    BaseRequestMiddleware,
+    BaseResponseMiddleware,
 )
 
 from resty.types import Request, Response
 
 
 class MiddlewareManager(BaseMiddlewareManager):
-    def __init__(self, default_middlewares: Iterable[BaseMiddleware] = None):
-        if not default_middlewares:
-            default_middlewares = []
-        for middleware in default_middlewares:
+    def __init__(self, middlewares: Iterable[BaseMiddleware] = None):
+        if not middlewares:
+            middlewares = []
+        for middleware in middlewares:
             self.add_middleware(middleware=middleware)
 
         self._middlewares = []
 
-    async def call_pre_middlewares(self, request: Request, **kwargs):
+    async def call_request_middlewares(self, request: Request, **kwargs):
         for middleware in self._middlewares:
-            if isinstance(middleware, BasePreRequestMiddleware):
+            if isinstance(middleware, BaseRequestMiddleware):
                 await middleware.handle_request(request=request, **kwargs)
 
-    async def call_post_middlewares(self, response: Response, **kwargs):
+    async def call_response_middlewares(self, response: Response, **kwargs):
         for middleware in self._middlewares:
-            if isinstance(middleware, BasePostRequestMiddleware):
+            if isinstance(middleware, BaseResponseMiddleware):
                 await middleware.handle_response(response=response, **kwargs)
 
     def add_middleware(self, middleware: BaseMiddleware):

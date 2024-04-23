@@ -2,14 +2,14 @@ from typing import Iterable
 
 from pydantic import BaseModel
 
-from resty.types import BaseManager, BaseRESTClient
-from resty.types import Request
+from resty.types import BaseManager, BaseRESTClient, Request, BaseSerializer
 from resty.enums import Endpoint, Method, Field
+from resty.exceptions import URLFormattingError
 
 
 class Manager(BaseManager):
     @classmethod
-    def _get_endpoint(cls, endpoint: Endpoint) -> str:
+    def _get_endpoint_url(cls, endpoint: Endpoint) -> str:
         return cls.endpoints.get(endpoint, cls.endpoints.get(endpoint.BASE, ""))
 
     @classmethod
@@ -17,96 +17,134 @@ class Manager(BaseManager):
         return cls.fields.get(Field.PRIMARY)
 
     @classmethod
-    def _get_request_kwargs(
-            cls, method: Method, url: str, json: dict = None, kwargs: dict = None
-    ) -> dict:
-        return {
+    def _get_pk(cls, obj) -> any:
+        pk_field = cls._get_pk_field()
+        if isinstance(obj, dict):
+            return obj.get(pk_field)
+        return getattr(obj, pk_field)
+
+    @classmethod
+    def _set_pk(cls, obj: BaseModel, pk: any):
+        setattr(obj, cls._get_pk_field(), pk)
+
+    @classmethod
+    def _inject_into_url(cls, url: str, **data) -> str:
+        try:
+            return url.format(**data)
+        except KeyError as e:
+            raise URLFormattingError(f"Missing '{e.args[0]}' in {url}")
+
+    @classmethod
+    def _prepare_url(cls, **options) -> str:
+        url = options.get("url")
+
+        if url is not None:
+            return url
+
+        endpoint = options.get("endpoint", Endpoint.BASE)
+        url = cls._get_endpoint_url(endpoint)
+        return cls._inject_into_url(url, **options)
+
+    @classmethod
+    def _build_request(cls, **options) -> Request:
+        return Request(
+            method=options.get("method", Method.GET),
+            url=options.get("url"),
+            json=options.get("json", {}),
+            headers=options.get("headers", {}),
+            params=options.get("params", {}),
+            cookies=options.get("cookies", {}),
+            redirects=options.get("redirects", False),
+            timeout=options.get("timeout", None),
+        )
+
+    @classmethod
+    def _prepare_options(cls, endpoint: Endpoint, method: Method, **kwargs) -> dict:
+        options = {
+            "endpoint": endpoint,
             "method": method,
-            "url": kwargs.pop("url", url),
-            "json": json,
-            "headers": kwargs.pop("headers", {}),
-            "params": kwargs.pop("params", {}),
-            "cookies": kwargs.pop("cookies", {}),
-            "redirects": kwargs.pop("redirects", False),
-            "timeout": kwargs.pop("timeout", None),
         }
+        options.update(kwargs)
+
+        options["url"] = cls._prepare_url(**options)
+
+        return options
+
+    @classmethod
+    async def _make_request(cls, client: BaseRESTClient, **options):
+        request = cls._build_request(**options)
+        return await client.request(request=request, **options)
+
+    @classmethod
+    def _get_serializer(cls, **options) -> type[BaseSerializer]:
+        return cls.serializer
+
+    @classmethod
+    def _serialize(cls, obj: BaseModel, **options) -> dict:
+        serializer = cls._get_serializer(**options)
+        return serializer.serialize(obj, **options)
+
+    @classmethod
+    def _deserialize(cls, data: list | dict, many: bool = False, **options):
+        serializer = cls._get_serializer(**options)
+        if many:
+            return serializer.deserialize_many(data=data, **options)
+        return serializer.deserialize(data=data, **options)
 
     @classmethod
     async def create(
             cls, client: BaseRESTClient, obj: BaseModel, **kwargs
     ) -> BaseModel:
+
         set_pk = kwargs.pop("set_pk", True)
 
-        request = Request(
-            **cls._get_request_kwargs(
-                method=Method.POST,
-                url=cls._get_endpoint(Endpoint.CREATE),
-                json=cls.serializer.serialize(obj=obj, endpoint=Endpoint.CREATE),
-                kwargs=kwargs,
-            ),
+        options = cls._prepare_options(
+            endpoint=Endpoint.CREATE, method=Method.POST, **kwargs
         )
 
-        response = await client.request(request=request, **kwargs)
+        options["json"] = cls._serialize(obj, **options)
+
+        response = await cls._make_request(client=client, **options)
 
         if set_pk:
-            pk_field = cls._get_pk_field()
-            pk = response.data.get(pk_field)
-            setattr(obj, pk_field, pk)
+            cls._set_pk(obj, pk=cls._get_pk(response.data))
 
         return obj
 
     @classmethod
     async def read(cls, client: BaseRESTClient, **kwargs) -> Iterable[BaseModel]:
-        request = Request(
-            **cls._get_request_kwargs(
-                method=Method.GET,
-                url=cls._get_endpoint(Endpoint.READ),
-                kwargs=kwargs
-            )
+        options = cls._prepare_options(
+            endpoint=Endpoint.READ, method=Method.GET, **kwargs
         )
-        response = await client.request(request=request, **kwargs)
-        result = []
-        for dataset in response.data:
-            result.append(cls.serializer.deserialize(dataset, endpoint=Endpoint.READ))
-        return result
+
+        response = await cls._make_request(client=client, **options)
+
+        return cls._deserialize(data=response.data, many=True, **options)
 
     @classmethod
     async def read_one(cls, client: BaseRESTClient, pk: any, **kwargs) -> BaseModel:
-        request = Request(
-            **cls._get_request_kwargs(
-                method=Method.GET,
-                url=cls._get_endpoint(Endpoint.READ_ONE).format(pk=pk),
-                kwargs=kwargs,
-            )
+        options = cls._prepare_options(
+            endpoint=Endpoint.READ_ONE, method=Method.GET, pk=pk, **kwargs
         )
-        response = await client.request(request=request, **kwargs)
 
-        return cls.serializer.deserialize(response.data, endpoint=Endpoint.READ_ONE)
+        response = await cls._make_request(client=client, **options)
+
+        return cls._deserialize(data=response.data, many=False, **options)
 
     @classmethod
     async def update(cls, client: BaseRESTClient, obj: BaseModel, **kwargs) -> None:
-        pk_field = cls._get_pk_field()
-        pk = getattr(obj, pk_field)
-
-        data = cls.serializer.serialize(obj=obj, endpoint=Endpoint.UPDATE)
-
-        request = Request(
-            **cls._get_request_kwargs(
-                method=Method.PATCH,
-                url=cls._get_endpoint(Endpoint.UPDATE).format(pk=pk),
-                json=data,
-                kwargs=kwargs,
-            )
+        options = cls._prepare_options(
+            endpoint=Endpoint.READ, method=Method.GET, pk=cls._get_pk(obj), **kwargs
         )
-        await client.request(request=request, **kwargs)
+
+        options["json"] = cls._serialize(obj=obj, **options)
+
+        await cls._make_request(client=client, **options)
 
     @classmethod
     async def delete(cls, client: BaseRESTClient, pk: any, **kwargs) -> None:
-        request = Request(
-            **cls._get_request_kwargs(
-                method=Method.DELETE,
-                url=cls._get_endpoint(Endpoint.DELETE).format(pk=pk),
-                kwargs=kwargs,
-            )
+        options = cls._prepare_options(
+            endpoint=Endpoint.READ, method=Method.GET, pk=pk, **kwargs
         )
-        await client.request(request=request, **kwargs)
+
+        await cls._make_request(client=client, **options)
