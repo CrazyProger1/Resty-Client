@@ -4,11 +4,11 @@ from resty.enums import Method
 
 
 class DjangoPagePaginationMiddleware(BasePaginationMiddleware):
-    async def handle_request(self, request: Request, **kwargs):
+    async def handle_request(self, request: Request, **context):
         if request.method in {
             Method.GET,
         }:
-            page = kwargs.pop("page", 1)
+            page = context.pop("page", 1)
 
             request.params.update(
                 {
@@ -16,7 +16,7 @@ class DjangoPagePaginationMiddleware(BasePaginationMiddleware):
                 }
             )
 
-    async def handle_response(self, response: Response, **kwargs):
+    async def handle_response(self, response: Response, **context):
         if response.request.method in {
             Method.GET,
         }:
@@ -29,12 +29,12 @@ class DjangoLimitOffsetPaginationMiddleware(DjangoPagePaginationMiddleware):
     def __init__(self, page_size: int = 100):
         self._limit = page_size
 
-    async def handle_request(self, request: Request, **kwargs):
+    async def handle_request(self, request: Request, **context):
         if request.method in {
             Method.GET,
         }:
-            page = kwargs.pop("page", 1) - 1
-            limit = kwargs.pop("limit", self._limit)
-            offset = kwargs.pop("offset", page * self._limit)
+            page = context.pop("page", 1) - 1
+            limit = context.pop("limit", self._limit)
+            offset = context.pop("offset", page * self._limit)
 
             request.params.update({"limit": limit, "offset": offset})

@@ -5,7 +5,7 @@ from resty.clients.httpx import RESTClient
 from resty.ext.django.middlewares import DjangoPagePaginationMiddleware
 
 from managers import ProductManager
-from schemas import Product
+from schemas import ProductSchema
 
 
 async def main():
@@ -15,7 +15,7 @@ async def main():
 
     rest_client.add_middleware(DjangoPagePaginationMiddleware())
 
-    product = Product(
+    product = ProductSchema(
         name='My Product',
         description='My Desc',
         code='123W31QQW'

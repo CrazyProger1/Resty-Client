@@ -1,7 +1,15 @@
 from resty.types import Request
 
 
-class HTTPError(Exception):
+class RestyError(Exception):
+    pass
+
+
+class URLFormattingError(RestyError):
+    pass
+
+
+class HTTPError(RestyError):
     def __init__(self, request: Request, status: int, url: str, data: dict):
         self.request = request
         self.status = status

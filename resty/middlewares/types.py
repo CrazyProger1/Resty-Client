@@ -1,13 +1,11 @@
 from abc import ABC
 
-from resty.types import BasePostRequestMiddleware, BasePreRequestMiddleware
+from resty.types import BaseResponseMiddleware, BaseRequestMiddleware
 
 
-class BasePaginationMiddleware(
-    BasePreRequestMiddleware, BasePostRequestMiddleware, ABC
-):
+class BasePaginationMiddleware(BaseRequestMiddleware, BaseResponseMiddleware, ABC):
     pass
 
 
-class BaseFilterMiddleware(BasePreRequestMiddleware, ABC):
+class BaseFilterMiddleware(BaseRequestMiddleware, ABC):
     pass

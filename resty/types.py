@@ -14,7 +14,7 @@ class Request:
     method: Method
     data: dict = None
     json: dict = None
-    timeout: int = None
+    timeout: int | None = None
     params: dict = field(default_factory=dict)
     headers: dict = field(default_factory=dict)
     cookies: dict = field(default_factory=dict)
@@ -25,29 +25,29 @@ class Request:
 class Response:
     request: Request
     status: int
-    data: dict = None
+    data: list | dict = None
 
 
 class BaseMiddleware(ABC):
     pass
 
 
-class BasePreRequestMiddleware(BaseMiddleware):
+class BaseRequestMiddleware(BaseMiddleware):
     @abstractmethod
-    async def handle_request(self, request: Request, **kwargs): ...
+    async def handle_request(self, request: Request, **context): ...
 
 
-class BasePostRequestMiddleware(BaseMiddleware):
+class BaseResponseMiddleware(BaseMiddleware):
     @abstractmethod
-    async def handle_response(self, response: Response, **kwargs): ...
+    async def handle_response(self, response: Response, **context): ...
 
 
 class BaseMiddlewareManager(ABC):
     @abstractmethod
-    async def call_pre_middlewares(self, request: Request, **kwargs): ...
+    async def call_request_middlewares(self, request: Request, **context): ...
 
     @abstractmethod
-    async def call_post_middlewares(self, response: Response, **kwargs): ...
+    async def call_response_middlewares(self, response: Response, **context): ...
 
     @abstractmethod
     def add_middleware(self, middleware: BaseMiddleware): ...
@@ -58,7 +58,7 @@ class BaseRESTClient(ABC):
     def add_middleware(self, middleware: BaseMiddleware): ...
 
     @abstractmethod
-    async def request(self, request: Request, **kwargs) -> Response: ...
+    async def request(self, request: Request, **context) -> Response: ...
 
 
 class BaseSerializer:
@@ -77,6 +77,10 @@ class BaseSerializer:
     @abstractmethod
     def deserialize(cls, data: dict, **context) -> BaseModel: ...
 
+    @classmethod
+    @abstractmethod
+    def deserialize_many(cls, data: list[dict], **context) -> list[BaseModel]: ...
+
 
 class BaseManager:
     serializer: type[BaseSerializer]
@@ -86,7 +90,7 @@ class BaseManager:
     @classmethod
     @abstractmethod
     async def create(
-            cls, client: BaseRESTClient, obj: BaseModel, **kwargs
+        cls, client: BaseRESTClient, obj: BaseModel, **kwargs
     ) -> BaseModel: ...
 
     @classmethod

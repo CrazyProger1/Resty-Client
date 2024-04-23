@@ -18,14 +18,13 @@ from resty.middlewares import MiddlewareManager
 class RESTClient(BaseRESTClient):
 
     def __init__(
-            self,
-            xclient: httpx.AsyncClient,
-            middleware_manager: BaseMiddlewareManager = None,
+        self,
+        xclient: httpx.AsyncClient = None,
+        middleware_manager: BaseMiddlewareManager = None,
     ):
-        self._xclient = xclient
-        self._middleware_manager = middleware_manager or MiddlewareManager(
-            default_middlewares=None,
-        )
+
+        self._xclient = xclient or httpx.AsyncClient()
+        self._middleware_manager = middleware_manager or MiddlewareManager()
 
     @staticmethod
     def _parse_xresponse(xresponse: httpx.Response) -> dict | list | None:
@@ -38,8 +37,11 @@ class RESTClient(BaseRESTClient):
 
     @staticmethod
     def _check_status(
-            status: int, expected_status: int | Container[int], request: Request, url: str,
-            data: dict = None
+        status: int,
+        expected_status: int | Container[int],
+        request: Request,
+        url: str,
+        data: dict = None,
     ):
         if status != expected_status:
             if isinstance(expected_status, Container) and status in expected_status:
@@ -48,24 +50,8 @@ class RESTClient(BaseRESTClient):
                 exc: type[HTTPError] = STATUS_ERRORS.get(status, HTTPError)
                 raise exc(request=request, status=status, url=url, data=data)
 
-    def add_middleware(self, middleware: BaseMiddleware):
-        self._middleware_manager.add_middleware(middleware=middleware)
-
-    async def request(self, request: Request, **kwargs) -> Response:
-        if not isinstance(request, Request):
-            raise TypeError("request is not of type Request")
-
-        expected_status: int = kwargs.pop(
-            "expected_status", DEFAULT_CODES.get(request.method)
-        )
-        check_status: bool = kwargs.pop("check_status", True)
-
-        if not isinstance(expected_status, (int, Container)):
-            raise TypeError("expected status should be type of int or Container[int]")
-
-        await self._middleware_manager.call_pre_middlewares(request=request, **kwargs)
-
-        xresponse = await self._xclient.request(
+    async def _make_xrequest(self, request: Request):
+        return await self._xclient.request(
             method=request.method.value,
             url=request.url,
             headers=request.headers,
@@ -77,9 +63,30 @@ class RESTClient(BaseRESTClient):
             timeout=request.timeout,
         )
 
-        status = xresponse.status_code
+    def add_middleware(self, middleware: BaseMiddleware):
+        self._middleware_manager.add_middleware(middleware=middleware)
+
+    async def request(self, request: Request, **context) -> Response:
+        if not isinstance(request, Request):
+            raise TypeError("request is not of type Request")
+
+        expected_status: int = context.pop(
+            "expected_status", DEFAULT_CODES.get(request.method)
+        )
+        check_status: bool = context.pop("check_status", True)
+
+        if not isinstance(expected_status, (int, Container)):
+            raise TypeError("expected status should be type of int or Container[int]")
+
+        await self._middleware_manager.call_request_middlewares(
+            request=request, **context
+        )
+
+        xresponse = await self._make_xrequest(request=request)
 
         data = self._parse_xresponse(xresponse=xresponse)
+
+        status = xresponse.status_code
 
         if check_status:
             self._check_status(
@@ -95,8 +102,8 @@ class RESTClient(BaseRESTClient):
             data=data,
         )
 
-        await self._middleware_manager.call_post_middlewares(
-            response=response, **kwargs
+        await self._middleware_manager.call_response_middlewares(
+            response=response, **context
         )
 
         return response
