@@ -93,7 +93,7 @@ class Manager(BaseManager):
 
     @classmethod
     async def create(
-        cls, client: BaseRESTClient, obj: BaseModel, **kwargs
+            cls, client: BaseRESTClient, obj: BaseModel, **kwargs
     ) -> BaseModel:
 
         set_pk = kwargs.pop("set_pk", True)
@@ -134,7 +134,7 @@ class Manager(BaseManager):
     @classmethod
     async def update(cls, client: BaseRESTClient, obj: BaseModel, **kwargs) -> None:
         options = cls._prepare_options(
-            endpoint=Endpoint.READ, method=Method.GET, pk=cls._get_pk(obj), **kwargs
+            endpoint=Endpoint.UPDATE, method=Method.PATCH, pk=cls._get_pk(obj), **kwargs
         )
 
         options["json"] = cls._serialize(obj=obj, **options)
@@ -144,7 +144,7 @@ class Manager(BaseManager):
     @classmethod
     async def delete(cls, client: BaseRESTClient, pk: any, **kwargs) -> None:
         options = cls._prepare_options(
-            endpoint=Endpoint.READ, method=Method.GET, pk=pk, **kwargs
+            endpoint=Endpoint.DELETE, method=Method.DELETE, pk=pk, **kwargs
         )
 
         await cls._make_request(client=client, **options)
