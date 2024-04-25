@@ -5,11 +5,13 @@ from resty.middlewares.types import (
     BaseRequestMiddleware,
 )
 from resty.middlewares.managers import MiddlewareManager
+from resty.middlewares.status import StatusCheckingMiddleware
 
 __all__ = [
-    'MiddlewareManager',
-    'BaseMiddleware',
-    'BaseResponseMiddleware',
-    'BaseMiddlewareManager',
-    'BaseRequestMiddleware',
+    "MiddlewareManager",
+    "BaseMiddleware",
+    "BaseMiddlewareManager",
+    "BaseResponseMiddleware",
+    "BaseRequestMiddleware",
+    "StatusCheckingMiddleware",
 ]

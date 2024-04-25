@@ -4,17 +4,18 @@ from resty.middlewares import (
     MiddlewareManager,
     BaseMiddleware,
     BaseResponseMiddleware,
-    BaseRequestMiddleware
+    BaseRequestMiddleware,
 )
 
 
 @pytest.mark.parametrize(
-    'base',
+    "base",
     [
         BaseMiddleware,
         BaseResponseMiddleware,
         BaseRequestMiddleware,
-    ])
+    ],
+)
 def test_add_middleware(base):
     manager = MiddlewareManager()
 
@@ -27,12 +28,12 @@ def test_add_middleware(base):
 
 
 @pytest.mark.parametrize(
-    'base',
+    "base",
     [
         BaseMiddleware,
         BaseResponseMiddleware,
         BaseRequestMiddleware,
-    ]
+    ],
 )
 def test_remove_middleware(base):
     manager = MiddlewareManager()
@@ -51,24 +52,24 @@ def test_remove_middleware(base):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    'base',
+    "base",
     [
         BaseMiddleware,
         BaseResponseMiddleware,
         BaseRequestMiddleware,
-    ]
+    ],
 )
 async def test_with_middleware(base):
     manager = MiddlewareManager()
 
     class MyMiddleware(base):
         async def __call__(self, *args, **kwargs):
-            assert args[0] == 'test'
+            assert args[0] == "test"
 
     with manager.middleware(MyMiddleware()):
         assert len(tuple(manager.middlewares)) == 1
 
-        await manager('test')
+        await manager("test")
 
     assert len(tuple(manager.middlewares)) == 0
 
@@ -76,4 +77,4 @@ async def test_with_middleware(base):
 def test_invalid_middleware():
     with pytest.raises(TypeError):
         manager = MiddlewareManager()
-        manager.add_middleware('test')
+        manager.add_middleware("test")

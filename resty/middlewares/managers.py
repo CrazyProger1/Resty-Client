@@ -17,7 +17,7 @@ class MiddlewareManager(BaseMiddlewareManager):
 
     def add_middleware(self, middleware: BaseMiddleware):
         if not isinstance(middleware, BaseMiddleware):
-            raise TypeError('Middleware must inherit the base type BaseMiddleware')
+            raise TypeError("Middleware must inherit the base type BaseMiddleware")
 
         if middleware not in self._middlewares:
             self._middlewares.append(middleware)
@@ -40,7 +40,9 @@ class MiddlewareManager(BaseMiddlewareManager):
         yield
         self.remove_middlewares(*middlewares)
 
-    async def __call__(self, *args, base: type[BaseMiddleware] = BaseMiddleware, **kwargs):
+    async def __call__(
+        self, *args, base: type[BaseMiddleware] = BaseMiddleware, **kwargs
+    ):
         for middleware in self._middlewares:
             if isinstance(middleware, base):
                 await middleware(*args, **kwargs)
