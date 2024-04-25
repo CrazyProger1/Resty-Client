@@ -167,4 +167,5 @@ cython_debug/
 
 
 # Test File
+resty_proto
 main.py
