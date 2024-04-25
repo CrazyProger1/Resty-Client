@@ -9,6 +9,12 @@ class URLFormattingError(RestyError):
     pass
 
 
+class ConnectError(RestyError):
+    def __init__(self, url: str):
+        self.url = url
+        super().__init__(f"Failed to establish a connection to the server {url}")
+
+
 class HTTPError(RestyError):
     def __init__(self, response: Response):
         self.response = response

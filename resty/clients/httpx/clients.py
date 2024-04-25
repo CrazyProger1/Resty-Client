@@ -1,3 +1,5 @@
+import json
+
 import httpx
 
 from resty.clients.types import (
@@ -11,6 +13,7 @@ from resty.middlewares import (
     BaseResponseMiddleware,
     StatusCheckingMiddleware,
 )
+from resty.exceptions import ConnectError
 
 
 class RESTClient(BaseRESTClient):
@@ -22,13 +25,44 @@ class RESTClient(BaseRESTClient):
         if check_status:
             self.middlewares.add_middleware(StatusCheckingMiddleware())
 
-    async def _make_request(self, request: Request) -> Response:
-        response = Response(
-            data={},
-            status=200,
+    async def _make_xrequest(self, request: Request) -> httpx.Response:
+        try:
+            return await self._xclient.request(
+                method=request.method.value,
+                url=request.url,
+                headers=request.headers,
+                json=request.json,
+                data=request.data,
+                params=request.params,
+                cookies=request.cookies,
+                follow_redirects=request.redirects,
+                timeout=request.timeout,
+            )
+        except httpx.ConnectError:
+            raise ConnectError(url=request.url)
+
+    @staticmethod
+    def _extract_json_data(xresponse: httpx.Response) -> dict | list:
+        try:
+            data = xresponse.json()
+        except json.decoder.JSONDecodeError:
+            data = {}
+
+        return data
+
+    async def _parse_xresponse(self, request: Request, xresponse: httpx.Response) -> Response:
+        return Response(
             request=request,
-            middleware_options=request.middleware_options,
+            status=xresponse.status_code,
+            json=self._extract_json_data(xresponse=xresponse),
+            content=xresponse.content,
+            text=xresponse.text,
+            middleware_options=request.middleware_options
         )
+
+    async def _make_request(self, request: Request) -> Response:
+        xresponse = await self._make_xrequest(request=request)
+        response = await self._parse_xresponse(request=request, xresponse=xresponse)
         return response
 
     async def _call_middlewares(self, reqresp: Request | Response):
