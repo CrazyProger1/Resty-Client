@@ -45,10 +45,10 @@ class Manager(BaseManager):
 
     @classmethod
     def _prepare_url(cls, **options) -> str:
-        url = options.get("url")
+        url = options.pop("url", None)
 
         if url is not None:
-            return url
+            return cls._inject_into_url(url, **options)
 
         endpoint = options.get("endpoint", Endpoint.BASE)
         url = cls._get_endpoint_url(endpoint)
@@ -87,10 +87,10 @@ class Manager(BaseManager):
     @classmethod
     def _get_serializer(cls, **options) -> type[BaseSerializer]:
         if cls.serializer is None:
-            raise TypeError("Serializer not specified")
+            raise RuntimeError("Serializer not specified")
 
         if not inspect.isclass(cls.serializer) or not issubclass(
-            cls.serializer, BaseSerializer
+                cls.serializer, BaseSerializer
         ):
             raise TypeError("The serializer must be a subclass of BaseSerializer")
 
@@ -110,7 +110,7 @@ class Manager(BaseManager):
 
     @classmethod
     async def create(
-        cls, client: BaseRESTClient, obj: BaseModel, **kwargs
+            cls, client: BaseRESTClient, obj: BaseModel, **kwargs
     ) -> BaseModel:
 
         set_pk = kwargs.pop("set_pk", True)

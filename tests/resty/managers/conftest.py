@@ -3,19 +3,22 @@ from resty.types import BaseRESTClient, Request, Response, BaseMiddleware
 
 
 class MockRESTClient(BaseRESTClient):
-    def __init__(self, status: int, data, method: Method, expected_url: str, expected_json=None):
-        self.data = data
-        self.status = status
-        self.method = method
-        self.expected_url = expected_url
-        self.expected_json = expected_json
+    def __init__(
+            self,
+            status: int = None,
+            data=None,
+            **expected
+    ):
+        self.return_data = data
+        self.return_status = status
+        self.expected = expected
 
     def add_middleware(self, middleware: BaseMiddleware): ...
 
     async def request(self, request: Request, **context) -> Response:
-        assert request.method == self.method
-        assert request.url == self.expected_url
-        if self.expected_json is not None:
-            assert request.json == self.expected_json
+        for attrname, expected_value in self.expected.items():
+            assert getattr(request, attrname.removeprefix('expected_')) == expected_value
 
-        return Response(request=request, status=self.status, data=self.data)
+        return Response(
+            request=request, status=self.return_status, data=self.return_data
+        )
