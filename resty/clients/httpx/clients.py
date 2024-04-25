@@ -19,7 +19,9 @@ from resty.exceptions import ConnectError
 class RESTClient(BaseRESTClient):
     middlewares = MiddlewareManager()
 
-    def __init__(self, httpx_client: httpx.AsyncClient = None, check_status: bool = True):
+    def __init__(
+        self, httpx_client: httpx.AsyncClient = None, check_status: bool = True
+    ):
         self._xclient = httpx_client or httpx.AsyncClient()
 
         if check_status:
@@ -50,14 +52,16 @@ class RESTClient(BaseRESTClient):
 
         return data
 
-    async def _parse_xresponse(self, request: Request, xresponse: httpx.Response) -> Response:
+    async def _parse_xresponse(
+        self, request: Request, xresponse: httpx.Response
+    ) -> Response:
         return Response(
             request=request,
             status=xresponse.status_code,
             json=self._extract_json_data(xresponse=xresponse),
             content=xresponse.content,
             text=xresponse.text,
-            middleware_options=request.middleware_options
+            middleware_options=request.middleware_options,
         )
 
     async def _make_request(self, request: Request) -> Response:
@@ -68,7 +72,11 @@ class RESTClient(BaseRESTClient):
     async def _call_middlewares(self, reqresp: Request | Response):
         await self.middlewares(
             reqresp,
-            base=BaseRequestMiddleware if isinstance(reqresp, Request) else BaseResponseMiddleware,
+            base=(
+                BaseRequestMiddleware
+                if isinstance(reqresp, Request)
+                else BaseResponseMiddleware
+            ),
             **reqresp.middleware_options
         )
 
