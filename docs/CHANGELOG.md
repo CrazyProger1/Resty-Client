@@ -13,3 +13,7 @@
 - Added URL injecting mechanism (allows to perform many-layer requests: `api/v1/users/123/product/321`).
   See [example](../examples/crud_many_layers)
 - Added deserialize_many serializer method
+
+## v0.0.4
+
+- Manager fixes
