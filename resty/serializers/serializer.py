@@ -20,8 +20,7 @@ class Serializer(BaseSerializer):
 
         if cls.schemas is not None:
             schema = cls.schemas.get(
-                endpoint,
-                cls.schema or cls.schemas.get(Endpoint.BASE)
+                endpoint, cls.schema or cls.schemas.get(Endpoint.BASE)
             )
 
         if schema is None:

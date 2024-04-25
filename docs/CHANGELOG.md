@@ -16,4 +16,8 @@
 
 ## v0.0.4
 
-- Manager fixes
+- Manager important fixes!!!!
+
+## v0.0.5
+
+- Improved test coverage to xx%

@@ -83,9 +83,9 @@ class BaseSerializer:
 
 
 class BaseManager:
-    serializer: type[BaseSerializer]
-    endpoints: dict[Endpoint, str]
-    fields: dict[Field, str]
+    serializer: type[BaseSerializer] = None
+    endpoints: dict[Endpoint, str] = {}
+    fields: dict[Field, str] = {}
 
     @classmethod
     @abstractmethod

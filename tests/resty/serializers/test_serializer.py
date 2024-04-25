@@ -56,13 +56,14 @@ def test_serializer_deserialize_many(model, data):
 
 
 @pytest.mark.parametrize(
-    "models, context, expected_schema", [
+    "models, context, expected_schema",
+    [
         ({Endpoint.CREATE: CreateSchema}, {"endpoint": Endpoint.CREATE}, CreateSchema),
         ({Endpoint.READ: ReadSchema}, {"endpoint": Endpoint.READ}, ReadSchema),
         ({Endpoint.READ_ONE: Schema1}, {"endpoint": Endpoint.READ_ONE}, Schema1),
         ({Endpoint.BASE: Schema1}, {"endpoint": Endpoint.READ_ONE}, Schema1),
         ({Endpoint.BASE: Schema1}, {"schema": ReadSchema}, ReadSchema),
-    ]
+    ],
 )
 def test_get_schema(models, context, expected_schema):
     class Ser(Serializer):

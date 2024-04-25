@@ -1,3 +1,4 @@
+import inspect
 from typing import Iterable
 
 from pydantic import BaseModel
@@ -10,11 +11,19 @@ from resty.exceptions import URLFormattingError
 class Manager(BaseManager):
     @classmethod
     def _get_endpoint_url(cls, endpoint: Endpoint) -> str:
-        return cls.endpoints.get(endpoint, cls.endpoints.get(endpoint.BASE, ""))
+        url = cls.endpoints.get(endpoint, cls.endpoints.get(endpoint.BASE, None))
+        if url is None:
+            raise RuntimeError(
+                f"Endpoint.{endpoint.name} and Endpoint.BASE not specified at endpoints"
+            )
+        return url
 
     @classmethod
     def _get_pk_field(cls) -> str | None:
-        return cls.fields.get(Field.PRIMARY)
+        field = cls.fields.get(Field.PRIMARY)
+        if field is None:
+            raise RuntimeError("Field.PRIMARY not specified at fields")
+        return field
 
     @classmethod
     def _get_pk(cls, obj) -> any:
@@ -77,6 +86,14 @@ class Manager(BaseManager):
 
     @classmethod
     def _get_serializer(cls, **options) -> type[BaseSerializer]:
+        if cls.serializer is None:
+            raise TypeError("Serializer not specified")
+
+        if not inspect.isclass(cls.serializer) or not issubclass(
+            cls.serializer, BaseSerializer
+        ):
+            raise TypeError("The serializer must be a subclass of BaseSerializer")
+
         return cls.serializer
 
     @classmethod
@@ -93,7 +110,7 @@ class Manager(BaseManager):
 
     @classmethod
     async def create(
-            cls, client: BaseRESTClient, obj: BaseModel, **kwargs
+        cls, client: BaseRESTClient, obj: BaseModel, **kwargs
     ) -> BaseModel:
 
         set_pk = kwargs.pop("set_pk", True)
