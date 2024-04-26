@@ -21,3 +21,5 @@
 ## v0.0.5
 
 - Improved test coverage to 100%
+- Improved architecture
+- Expanded Readme docs & examples
