@@ -19,6 +19,8 @@ class Serializer(BaseSerializer):
 
     @classmethod
     def deserialize_many[
-    T: Schema
-    ](cls, schema: type[T], data: Iterable, **kwargs, ) -> Iterable[T]:
-        return tuple(cls.deserialize(schema=schema, data=dataset, **kwargs) for dataset in data)
+        T: Schema
+    ](cls, schema: type[T], data: Iterable, **kwargs,) -> Iterable[T]:
+        return tuple(
+            cls.deserialize(schema=schema, data=dataset, **kwargs) for dataset in data
+        )

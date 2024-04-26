@@ -1,5 +1,3 @@
-import pytest
-
 from resty.types import Schema
 from resty.serializers import Serializer
 
@@ -12,7 +10,7 @@ def test_serialize():
 
     serializer = Serializer()
 
-    obj = MySchema(id=1, name='test', private=False)
+    obj = MySchema(id=1, name="test", private=False)
 
     assert serializer.serialize(obj) == obj.model_dump()
 
@@ -25,7 +23,10 @@ def test_serialize_many():
 
     serializer = Serializer()
 
-    objs = [MySchema(id=1, name='test', private=False), MySchema(id=2, name='test2', private=True)]
+    objs = [
+        MySchema(id=1, name="test", private=False),
+        MySchema(id=2, name="test2", private=True),
+    ]
 
     assert serializer.serialize_many(objs) == tuple(obj.model_dump() for obj in objs)
 
@@ -38,7 +39,7 @@ def test_deserialize():
 
     serializer = Serializer()
 
-    obj = MySchema(id=1, name='test', private=False)
+    obj = MySchema(id=1, name="test", private=False)
 
     assert serializer.deserialize(MySchema, obj.model_dump()) == obj
 
@@ -51,7 +52,10 @@ def test_deserialize_many():
 
     serializer = Serializer()
 
-    objs = (MySchema(id=1, name='test', private=False), MySchema(id=2, name='test2', private=True))
+    objs = (
+        MySchema(id=1, name="test", private=False),
+        MySchema(id=2, name="test2", private=True),
+    )
     serialized = tuple(obj.model_dump() for obj in objs)
 
     assert serializer.deserialize_many(MySchema, serialized) == objs

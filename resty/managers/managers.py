@@ -1,10 +1,13 @@
 from typing import Mapping, Iterable
 
-from resty.managers.types import BaseManager
 from resty.types import Schema
+from resty.serializers import Serializer
+from resty.managers.types import BaseManager
 
 
 class Manager(BaseManager):
+    serializer_class = Serializer
+
     @classmethod
     async def create[
         T: Schema

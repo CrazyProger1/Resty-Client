@@ -9,7 +9,7 @@ class NetworkError(RestyError):
     pass
 
 
-class URLFormattingError(RestyError):
+class URLBuildingError(RestyError):
     pass
 
 

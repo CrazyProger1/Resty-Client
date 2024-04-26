@@ -15,6 +15,7 @@ class BaseURLBuilder(ABC):
     @abstractmethod
     def build(
             cls,
+            base: str,
             endpoints: Endpoints,
             endpoint: Endpoint,
             **kwargs,
