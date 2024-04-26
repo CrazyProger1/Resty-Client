@@ -11,12 +11,26 @@ class LoggingMiddleware(BaseRequestMiddleware, BaseResponseMiddleware):
         print(reqresp)
 
 
+class HelloWorldMiddleware(BaseRequestMiddleware):
+
+    async def __call__(self, request: Request, **kwargs):
+        print('Hello, World!')
+
+
 async def main():
     client = RESTClient()
 
     client.middlewares.add_middlewares(LoggingMiddleware())
 
     await client.request(Request(url="https://example.com", method=Method.GET))
+    # Request(url='https://example.com', method=<Method.GET: 'GET'>, ...)
+    # Response(request=Request(url='https://example.com', method=<Method.GET: 'GET'>, ...)
+
+    with client.middlewares.middleware(HelloWorldMiddleware()):
+        await client.request(Request(url="https://example.com", method=Method.GET))
+        # Request(url='https://example.com', method=<Method.GET: 'GET'>, ...)
+        # Hello, World!
+        # Response(request=Request(url='https://example.com', method=<Method.GET: 'GET'>, ...)
 
 
 if __name__ == "__main__":
