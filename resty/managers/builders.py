@@ -42,9 +42,6 @@ class URLBuilder(BaseURLBuilder):
                 endpoint_url
             )
         else:
-            if not base_url:
-                return ""
-
-            url = base_url
+            url = base_url or ""
 
         return cls._inject_params(url=url, **kwargs)

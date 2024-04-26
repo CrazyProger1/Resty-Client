@@ -1,13 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import Mapping, Iterable
+from typing import Mapping, Iterable, Callable
 
 from resty.enums import Endpoint, Field, Method
 from resty.serializers import BaseSerializer
-from resty.types import Schema
+from resty.clients import BaseRESTClient
+from resty.types import Schema, Response
 
 type Endpoints = Mapping[Endpoint, str]
 type Fields = Mapping[Field, str]
 type Methods = Mapping[Endpoint, Method]
+type ResponseType = type[Schema] | type[Mapping | Iterable] | Callable[[Response, ], any] | None
 
 
 class BaseURLBuilder(ABC):
@@ -40,8 +42,9 @@ class BaseManager(ABC):
     @abstractmethod
     async def create[T: Schema](
             cls,
+            client: BaseRESTClient,
             obj: Schema | Mapping,
-            response_schema: type[T] = None,
+            response_type: ResponseType = None,
             **kwargs,
     ) -> T | None: ...
 
@@ -49,7 +52,8 @@ class BaseManager(ABC):
     @abstractmethod
     async def read[T: Schema](
             cls,
-            response_schema: type[T],
+            client: BaseRESTClient,
+            response_type: ResponseType = None,
             **kwargs,
     ) -> Iterable[T]: ...
 
@@ -57,8 +61,9 @@ class BaseManager(ABC):
     @abstractmethod
     async def read_one[T: Schema](
             cls,
+            client: BaseRESTClient,
             obj_or_pk: Schema | Mapping | any,
-            response_schema: type[T],
+            response_type: ResponseType = None,
             **kwargs,
     ) -> T: ...
 
@@ -66,8 +71,9 @@ class BaseManager(ABC):
     @abstractmethod
     async def update[T: Schema](
             cls,
+            client: BaseRESTClient,
             obj: Schema | Mapping,
-            response_schema: type[T] = None,
+            response_type: ResponseType = None,
             **kwargs,
     ) -> T | None: ...
 
@@ -75,7 +81,8 @@ class BaseManager(ABC):
     @abstractmethod
     async def delete[T: Schema](
             cls,
+            client: BaseRESTClient,
             obj_or_pk: Schema | Mapping | any,
-            response_schema: type[T] = None,
+            response_type: ResponseType = None,
             **kwargs,
     ) -> T | None: ...

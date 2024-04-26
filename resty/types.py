@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Mapping, Iterable
 
 from pydantic import BaseModel
 
@@ -12,8 +13,8 @@ class Request:
     url: str
     method: Method
     endpoint: Endpoint = None
-    data: dict = None
-    json: dict = None
+    data: Mapping | Iterable = None
+    json: Mapping | Iterable = None
     timeout: int | None = None
     params: dict = field(default_factory=dict)
     headers: dict = field(default_factory=dict)
