@@ -1,12 +1,17 @@
 from dataclasses import dataclass, field
 
-from resty.enums import Method
+from pydantic import BaseModel
+
+from resty.enums import Method, Endpoint
+
+Schema = BaseModel
 
 
 @dataclass
 class Request:
     url: str
     method: Method
+    endpoint: Endpoint = None
     data: dict = None
     json: dict = None
     timeout: int | None = None

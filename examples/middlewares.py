@@ -14,7 +14,7 @@ class LoggingMiddleware(BaseRequestMiddleware, BaseResponseMiddleware):
 class HelloWorldMiddleware(BaseRequestMiddleware):
 
     async def __call__(self, request: Request, **kwargs):
-        print('Hello, World!')
+        print("Hello, World!")
 
 
 async def main():
