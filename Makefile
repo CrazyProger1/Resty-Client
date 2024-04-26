@@ -21,3 +21,4 @@ coverage-report: coverage;
 format:
 	poetry run python -m black tests
 	poetry run python -m black resty
+	poetry run python -m black examples

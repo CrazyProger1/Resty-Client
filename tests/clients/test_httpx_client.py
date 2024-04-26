@@ -19,7 +19,7 @@ from tests.clients.conftest import HTTPXAsyncClientMock
     ],
 )
 async def test_middlewares_calling(
-        base,
+    base,
 ):
     class Mid(base):
 
