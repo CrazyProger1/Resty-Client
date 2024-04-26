@@ -1,21 +1,32 @@
-from resty.types import Request
+from resty.types import Response
 
 
 class RestyError(Exception):
     pass
 
 
-class URLFormattingError(RestyError):
+class NetworkError(RestyError):
     pass
 
 
-class HTTPError(RestyError):
-    def __init__(self, request: Request, status: int, url: str, data: dict):
-        self.request = request
-        self.status = status
-        self.url = url
-        self.data = data
-        super().__init__(f"{request.method.value}: {url} -> {status}")
+class URLBuildingError(RestyError):
+    pass
+
+
+class ConnectError(NetworkError, ConnectionError):
+    def __init__(self, url: str):
+        self.url = url  # pragma: no cover
+        super().__init__(
+            f"Failed to establish a connection to the server {url}"
+        )  # pragma: no cover
+
+
+class HTTPError(NetworkError):
+    def __init__(self, response: Response):
+        self.response = response  # pragma: no cover
+        super().__init__(  # pragma: no cover
+            f"{response.request.method.value}: {response.request.url} -> {response.status}"
+        )
 
 
 class BadRequestError(HTTPError):

@@ -1,10 +1,17 @@
-from resty.middlewares.manager import MiddlewareManager
-from resty.middlewares.types import BasePaginationMiddleware
-from resty.types import BaseRequestMiddleware, BaseResponseMiddleware
+from resty.middlewares.types import (
+    BaseMiddleware,
+    BaseMiddlewareManager,
+    BaseResponseMiddleware,
+    BaseRequestMiddleware,
+)
+from resty.middlewares.managers import MiddlewareManager
+from resty.middlewares.status import StatusCheckingMiddleware
 
 __all__ = [
     "MiddlewareManager",
-    "BasePaginationMiddleware",
+    "BaseMiddleware",
+    "BaseMiddlewareManager",
     "BaseResponseMiddleware",
     "BaseRequestMiddleware",
+    "StatusCheckingMiddleware",
 ]

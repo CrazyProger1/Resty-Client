@@ -1,3 +1,7 @@
-from resty.serializers.serializer import Serializer
+from resty.serializers.types import BaseSerializer
+from resty.serializers.serializers import Serializer
 
-__all__ = ["Serializer"]
+__all__ = [
+    "BaseSerializer",
+    "Serializer",
+]

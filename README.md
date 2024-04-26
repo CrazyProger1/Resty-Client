@@ -9,6 +9,7 @@
 <a href="https://github.com/CrazyProger1/Resty-Client/releases/latest"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/CrazyProger1/Resty-Client"></a>
 <a href="https://pypi.org/project/resty-client/"><img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/resty-client"></a>
 <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code Style"></a>
+<img src="https://img.shields.io/badge/coverage-100%25-brightgreen" alt="Coverage"/>
 </p>
 
 
@@ -38,91 +39,116 @@ poetry add resty-client
 
 ## Getting-Started
 
-### Schema
+See [examples](examples) for more.
+
+### Schemas
 
 ```python
-from pydantic import BaseModel
+from resty.types import Schema
 
 
-class Product(BaseModel):
-    id: int | None = None
-    name: str
-    description: str
-    code: str
-```
-
-### Serializer
-
-```python
-from resty.serializers import Serializer
+class UserCreateSchema(Schema):
+    username: str
+    email: str
+    password: str
+    age: int
 
 
-class ProductSerializer(Serializer):
-    schema = Product
+class UserReadSchema(Schema):
+    id: int
+    username: str
+    email: str
+    age: int
+
+
+class UserUpdateSchema(Schema):
+    username: str = None
+    email: str = None
 ```
 
 ### Manager
 
 ```python
-from resty.enums import (
-    Endpoint,
-    Field
-)
 from resty.managers import Manager
+from resty.enums import Endpoint, Field
 
 
-class ProductManager(Manager):
-    serializer = ProductSerializer
+class UserManager(Manager):
     endpoints = {
-        Endpoint.CREATE: '/products/',
-        Endpoint.READ: '/products/',
-        Endpoint.READ_ONE: '/products/{pk}/',
-        Endpoint.UPDATE: '/products/{pk}/',
-        Endpoint.DELETE: '/products/{pk}/',
+        Endpoint.CREATE: "users/",
+        Endpoint.READ: "users/",
+        Endpoint.READ_ONE: "users/{pk}",
+        Endpoint.UPDATE: "users/{pk}",
+        Endpoint.DELETE: "users/{pk}",
     }
     fields = {
-        Field.PRIMARY: 'id',
+        Field.PRIMARY: "id",
     }
 ```
 
 ### CRUD
 
 ```python
-from httpx import AsyncClient
+import asyncio
+
+import httpx
 
 from resty.clients.httpx import RESTClient
 
 
 async def main():
-    xclient = AsyncClient(base_url='http://localhost:8000/')
-    rest_client = RESTClient(xclient=xclient)
+    client = RESTClient(httpx.AsyncClient(base_url="https://localhost:8000"))
 
-    product = Product(
-        name='First prod',
-        description='My Desc',
-        code='123W31Q'
+    response = await UserManager.create(
+        client=client,
+        obj=UserCreateSchema(
+            username="admin",
+            email="admin@admin.com",
+            password="admin",
+            age=19,
+        ),
+        response_type=UserReadSchema,
+    )
+    print(response)  # id=1 username='admin' email='admin@admin.com' age=19
+
+    response = await UserManager.read(
+        client=client,
+        response_type=UserReadSchema,
     )
 
-    # Create
-    created = await ProductManager.create(rest_client, product)
+    for obj in response:
+        print(obj)  # id=1 username='admin' email='admin@admin.com' age=19
 
-    # Read
-    my_product = await ProductManager.read_one(rest_client, created.id)
+    response = await UserManager.read_one(
+        client=client,
+        obj_or_pk=1,
+        response_type=UserReadSchema,
+    )
 
-    for prod in await ProductManager.read(rest_client):
-        print(prod.name)
+    print(response)  # id=1 username='admin' email='admin@admin.com' age=19
 
-    # Update
-    my_product.description = 'QWERTY'
-    await ProductManager.update(rest_client, my_product)
+    response = await UserManager.update(
+        client=client,
+        obj=UserUpdateSchema(id=1, username="admin123", ),
+        response_type=UserReadSchema,
+    )
 
-    # Delete
-    await ProductManager.delete(rest_client, my_product.id)
+    print(response)  # id=1 username='admin123' email='admin@admin.com' age=19
+
+    await UserManager.delete(
+        client=client,
+        obj_or_pk=1,
+        expected_status=204,
+    )
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 ## Status
 
-``0.0.4`` - **RELEASED**
+``0.0.5`` - **RELEASED**
 
 ## Licence
 

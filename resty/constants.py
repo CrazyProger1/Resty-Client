@@ -1,4 +1,3 @@
-from resty.enums import Method
 from resty.exceptions import (
     NotFoundError,
     BadRequestError,
@@ -7,14 +6,6 @@ from resty.exceptions import (
     InternalServerError,
     ForbiddenError,
 )
-
-DEFAULT_CODES = {
-    Method.GET: 200,
-    Method.POST: {201, 200},
-    Method.PUT: 200,
-    Method.PATCH: 200,
-    Method.DELETE: {204, 200},
-}
 
 STATUS_ERRORS = {
     400: BadRequestError,

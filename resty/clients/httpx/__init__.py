@@ -1,8 +1,5 @@
-try:
-    import httpx
-except ImportError:
-    raise ImportError("Please install httpx to use httpx rest client")
+from resty.clients.httpx.clients import RESTClient
 
-from .client import RESTClient
-
-__all__ = ["RESTClient"]
+__all__ = [
+    "RESTClient",
+]
