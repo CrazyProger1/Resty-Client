@@ -27,7 +27,7 @@ class Request:
 class Response:
     request: Request
     status: int
-    content: bytes
-    text: str
-    json: list | dict
+    content: bytes = None
+    text: str = None
+    json: list | dict = None
     middleware_options: dict = field(default_factory=dict)

@@ -8,9 +8,9 @@ from resty.exceptions import HTTPError
 
 class StatusCheckingMiddleware(BaseResponseMiddleware):
     def __init__(
-        self,
-        errors: Mapping[int, type[Exception]] = None,
-        default_error: type[Exception] = HTTPError,
+            self,
+            errors: Mapping[int, type[Exception]] = None,
+            default_error: type[Exception] = HTTPError,
     ):
         self._errors = errors or STATUS_ERRORS
         self._default_error = default_error
@@ -33,10 +33,9 @@ class StatusCheckingMiddleware(BaseResponseMiddleware):
         actual_status = response.status
         expected_status = kwargs.pop(
             "expected_status",
-            {
-                200,
-            },
+            {200, 201},
         )
+
         check_status = kwargs.pop("check_status", True)
 
         if check_status and not self._check_status(actual_status, expected_status):

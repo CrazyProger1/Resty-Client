@@ -40,6 +40,22 @@ class BaseManager(ABC):
 
     @classmethod
     @abstractmethod
+    def get_serializer(cls, **kwargs) -> type[BaseSerializer]: ...
+
+    @classmethod
+    @abstractmethod
+    def get_method(cls, endpoint: Endpoint, **kwargs) -> Method: ...
+
+    @classmethod
+    @abstractmethod
+    def get_field(cls, field: Field) -> str: ...
+
+    @classmethod
+    @abstractmethod
+    def get_pk(cls, obj: Schema | Mapping) -> any: ...
+
+    @classmethod
+    @abstractmethod
     async def create[T: Schema](
             cls,
             client: BaseRESTClient,

@@ -56,6 +56,12 @@ class Manager(BaseManager):
         return getattr(obj, field, None)
 
     @classmethod
+    def _get_pk(cls, obj_or_pk: any) -> any:
+        if isinstance(obj_or_pk, Mapping | Schema):
+            return cls.get_pk(obj=obj_or_pk)
+        return obj_or_pk
+
+    @classmethod
     def _deserialize(cls, schema: type[Schema], data: any, **kwargs):
         serializer = cls.get_serializer(**kwargs)
         if isinstance(data, Mapping):
@@ -114,6 +120,9 @@ class Manager(BaseManager):
 
     @classmethod
     def _handle_response(cls, response: Response, response_type: ResponseType, **kwargs) -> any:
+        if not response:
+            return
+
         if inspect.isclass(response_type):
             if issubclass(response_type, dict | list | tuple | set):
                 return response_type(response.json)
@@ -144,9 +153,10 @@ class Manager(BaseManager):
     @classmethod
     async def read_one[T: Schema](cls, client: BaseRESTClient, obj_or_pk: Schema | Mapping | any,
                                   response_type: ResponseType = None, **kwargs) -> T:
+
         request = cls._prepare_request(
             endpoint=Endpoint.READ_ONE,
-            pk=kwargs.pop('pk', cls.get_pk(obj_or_pk)),
+            pk=cls._get_pk(obj_or_pk=obj_or_pk),
             **kwargs
         )
         response = await cls._make_request(client=client, request=request)
@@ -156,7 +166,7 @@ class Manager(BaseManager):
     async def update[T: Schema](cls, client: BaseRESTClient, obj: Schema | Mapping, response_type: ResponseType = None,
                                 **kwargs) -> T | None:
         request = cls._prepare_request(
-            endpoint=Endpoint.READ_ONE,
+            endpoint=Endpoint.UPDATE,
             pk=kwargs.pop('pk', cls.get_pk(obj)),
             obj=obj,
             **kwargs
@@ -170,7 +180,7 @@ class Manager(BaseManager):
                                 **kwargs) -> T | None:
         request = cls._prepare_request(
             endpoint=Endpoint.DELETE,
-            pk=kwargs.pop('pk', cls.get_pk(obj_or_pk)),
+            pk=cls._get_pk(obj_or_pk=obj_or_pk),
             **kwargs
         )
         response = await cls._make_request(client=client, request=request)

@@ -22,4 +22,4 @@
 
 - Improved test coverage to 100%
 - Improved architecture
-- Expanded Readme docs & examples
+- Added examples

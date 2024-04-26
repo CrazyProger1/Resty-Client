@@ -39,6 +39,112 @@ poetry add resty-client
 
 ## Getting-Started
 
+See [examples](examples) for more.
+
+### Schemas
+
+```python
+from resty.types import Schema
+
+
+class UserCreateSchema(Schema):
+    username: str
+    email: str
+    password: str
+    age: int
+
+
+class UserReadSchema(Schema):
+    id: int
+    username: str
+    email: str
+    age: int
+
+
+class UserUpdateSchema(Schema):
+    username: str = None
+    email: str = None
+```
+
+### Manager
+
+```python
+from resty.managers import Manager
+from resty.enums import Endpoint, Field
+
+
+class UserManager(Manager):
+    endpoints = {
+        Endpoint.CREATE: "users/",
+        Endpoint.READ: "users/",
+        Endpoint.READ_ONE: "users/{pk}",
+        Endpoint.UPDATE: "users/{pk}",
+        Endpoint.DELETE: "users/{pk}",
+    }
+    fields = {
+        Field.PRIMARY: "id",
+    }
+```
+
+### CRUD
+
+```python
+import asyncio
+
+import httpx
+
+from resty.clients.httpx import RESTClient
+
+
+async def main():
+    client = RESTClient(httpx.AsyncClient(base_url="https://localhost:8000"))
+
+    response = await UserManager.create(
+        client=client,
+        obj=UserCreateSchema(
+            username="admin",
+            email="admin@admin.com",
+            password="admin",
+            age=19,
+        ),
+        response_type=UserReadSchema,
+    )
+    print(response)  # id=1 username='admin' email='admin@admin.com' age=19
+
+    response = await UserManager.read(
+        client=client,
+        response_type=UserReadSchema,
+    )
+
+    for obj in response:
+        print(obj)  # id=1 username='admin' email='admin@admin.com' age=19
+
+    response = await UserManager.read_one(
+        client=client,
+        obj_or_pk=1,
+        response_type=UserReadSchema,
+    )
+
+    print(response)  # id=1 username='admin' email='admin@admin.com' age=19
+
+    response = await UserManager.update(
+        client=client,
+        obj=UserUpdateSchema(id=1, username="admin123", ),
+        response_type=UserReadSchema,
+    )
+
+    print(response)  # id=1 username='admin123' email='admin@admin.com' age=19
+
+    await UserManager.delete(
+        client=client,
+        obj_or_pk=1,
+        expected_status=204,
+    )
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
 
 ## Status
 

@@ -1,3 +1,5 @@
+import pytest
+
 from resty.clients import BaseRESTClient
 from resty.types import Request, Response
 
@@ -9,6 +11,16 @@ class RESTClientMock(BaseRESTClient):  # pragma: nocover
 
     async def request(self, request: Request) -> Response:
         for key, value in self.expected.items():
-            assert getattr(request, key) != value
+            assert getattr(request, key) == value
 
         return self.response
+
+
+@pytest.fixture
+def client(request): # pragma: nocover
+    response, expected = request.param
+
+    return RESTClientMock(
+        response=response,
+        **expected,
+    )
