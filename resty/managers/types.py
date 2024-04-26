@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Mapping, Iterable
 
 from resty.enums import Endpoint, Field, Method
+from resty.serializers import BaseSerializer
 from resty.types import Schema
 
 type Endpoints = Mapping[Endpoint, str]
@@ -10,23 +11,14 @@ type Methods = Mapping[Endpoint, Method]
 
 
 class BaseURLBuilder(ABC):
+    @classmethod
     @abstractmethod
-    def build(self, endpoints: Endpoints, endpoint: Endpoint, **kwargs): ...
-
-
-class BaseSerializer(ABC):
-
-    @abstractmethod
-    def serialize(self, obj: Schema, **kwargs) -> Mapping: ...
-
-    @abstractmethod
-    def serialize_many(self, objs: Iterable[Schema], **kwargs) -> Iterable: ...
-
-    @abstractmethod
-    def deserialize[T: Schema](self, schema: type[T], data: Mapping, **kwargs) -> T: ...
-
-    @abstractmethod
-    def deserialize_many[T: Schema](self, schema: type[T], data: Iterable, **kwargs) -> Iterable[T]: ...
+    def build(
+            cls,
+            endpoints: Endpoints,
+            endpoint: Endpoint,
+            **kwargs,
+    ) -> str: ...
 
 
 class BaseManager(ABC):
@@ -43,18 +35,46 @@ class BaseManager(ABC):
     serializer_class: BaseSerializer
     url_builder_class: BaseURLBuilder
 
+    @classmethod
     @abstractmethod
-    async def create[T: Schema](self, obj: Schema | Mapping, response_schema: type[T] = None, **kwargs) -> T | None: ...
+    async def create[T: Schema](
+            cls,
+            obj: Schema | Mapping,
+            response_schema: type[T] = None,
+            **kwargs,
+    ) -> T | None: ...
 
+    @classmethod
     @abstractmethod
-    async def read[T: Schema](self, response_schema: type[T], **kwargs) -> Iterable[T]: ...
+    async def read[T: Schema](
+            cls,
+            response_schema: type[T],
+            **kwargs,
+    ) -> Iterable[T]: ...
 
+    @classmethod
     @abstractmethod
-    async def read_one[T: Schema](self, obj_or_pk: Schema | Mapping | any, response_schema: type[T], **kwargs) -> T: ...
+    async def read_one[T: Schema](
+            cls,
+            obj_or_pk: Schema | Mapping | any,
+            response_schema: type[T],
+            **kwargs,
+    ) -> T: ...
 
+    @classmethod
     @abstractmethod
-    async def update[T: Schema](self, obj: Schema | Mapping, response_schema: type[T] = None, **kwargs) -> T | None: ...
+    async def update[T: Schema](
+            cls,
+            obj: Schema | Mapping,
+            response_schema: type[T] = None,
+            **kwargs,
+    ) -> T | None: ...
 
+    @classmethod
     @abstractmethod
-    async def delete[T: Schema](self, obj_or_pk: Schema | Mapping | any, response_schema: type[T] = None,
-                                **kwargs) -> T | None: ...
+    async def delete[T: Schema](
+            cls,
+            obj_or_pk: Schema | Mapping | any,
+            response_schema: type[T] = None,
+            **kwargs,
+    ) -> T | None: ...

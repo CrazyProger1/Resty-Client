@@ -51,7 +51,6 @@ files = ["resty"]
 show_error_codes = true
 strict = true
 
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

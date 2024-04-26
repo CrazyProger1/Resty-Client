@@ -20,5 +20,5 @@ coverage-report: coverage;
 .PHONY: format
 format:
 	poetry run python -m black tests
-	poetry run python -m black resty
+	poetry run python -m black --exclude "types.py" resty
 	poetry run python -m black examples
