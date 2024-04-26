@@ -5,7 +5,6 @@ from resty.middlewares.types import BaseMiddlewareManager, BaseMiddleware
 
 
 class MiddlewareManager(BaseMiddlewareManager):
-
     def __init__(self, middlewares: Iterable = None):
         self._middlewares = []
 

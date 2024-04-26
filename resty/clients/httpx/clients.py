@@ -12,16 +12,20 @@ from resty.middlewares import (
     BaseRequestMiddleware,
     BaseResponseMiddleware,
     StatusCheckingMiddleware,
+    BaseMiddlewareManager,
 )
 from resty.exceptions import ConnectError
 
 
 class RESTClient(BaseRESTClient):
-    middlewares = MiddlewareManager()
 
     def __init__(
-        self, httpx_client: httpx.AsyncClient = None, check_status: bool = True
+        self,
+        httpx_client: httpx.AsyncClient = None,
+        check_status: bool = True,
+        middleware_manager: BaseMiddlewareManager = None,
     ):
+        self.middlewares = middleware_manager or MiddlewareManager()
         self._xclient = httpx_client or httpx.AsyncClient()
 
         if check_status:

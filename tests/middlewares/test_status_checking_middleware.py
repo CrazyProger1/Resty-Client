@@ -20,22 +20,23 @@ class ErrorWithConstructor(Exception):
     [
         (200, 404, CustomError),
         ((200, 201), 401, CustomError),
-        ((200, 204), 403, ErrorWithConstructor)
-    ]
+        ((200, 204), 403, ErrorWithConstructor),
+    ],
 )
 async def test_invalid_status_check(expected_status, actual_status, error):
     mid = StatusCheckingMiddleware(errors={actual_status: error})
     with pytest.raises(error):
-        await mid(response=Response(
-            request=Request(
-                url="",
-                method=Method.GET,
+        await mid(
+            response=Response(
+                request=Request(
+                    url="",
+                    method=Method.GET,
+                ),
+                status=actual_status,
+                content=b"",
+                text="",
+                json={},
+                middleware_options={},
             ),
-            status=actual_status,
-            content=b"",
-            text="",
-            json={},
-            middleware_options={}
-        ),
-            expected_status=expected_status
+            expected_status=expected_status,
         )
