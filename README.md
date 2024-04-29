@@ -149,7 +149,7 @@ if __name__ == "__main__":
 
 ## Status
 
-``0.0.5`` - **RELEASED**
+``0.0.6`` - **RELEASED**
 
 ## Licence
 
