@@ -8,9 +8,9 @@ from resty.exceptions import HTTPError
 
 class StatusCheckingMiddleware(BaseResponseMiddleware):
     def __init__(
-            self,
-            errors: Mapping[int, type[Exception]] = None,
-            default_error: type[Exception] = HTTPError,
+        self,
+        errors: Mapping[int, type[Exception]] = None,
+        default_error: type[Exception] = HTTPError,
     ):
         self._errors = errors or STATUS_ERRORS
         self._default_error = default_error

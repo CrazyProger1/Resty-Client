@@ -1,4 +1,5 @@
 import json
+from urllib.parse import urljoin
 
 import httpx
 
@@ -20,10 +21,10 @@ from resty.exceptions import ConnectError
 class RESTClient(BaseRESTClient):
 
     def __init__(
-        self,
-        httpx_client: httpx.AsyncClient = None,
-        check_status: bool = True,
-        middleware_manager: BaseMiddlewareManager = None,
+            self,
+            httpx_client: httpx.AsyncClient = None,
+            check_status: bool = True,
+            middleware_manager: BaseMiddlewareManager = None,
     ):
         self.middlewares = middleware_manager or MiddlewareManager()
         self._xclient = httpx_client or httpx.AsyncClient()
@@ -45,7 +46,7 @@ class RESTClient(BaseRESTClient):
                 timeout=request.timeout,
             )
         except httpx.ConnectError:
-            raise ConnectError(url=request.url)
+            raise ConnectError(url=urljoin(str(self._xclient.base_url), request.url))
 
     @staticmethod
     def _extract_json_data(xresponse: httpx.Response) -> dict | list:
@@ -57,7 +58,7 @@ class RESTClient(BaseRESTClient):
         return data
 
     async def _parse_xresponse(
-        self, request: Request, xresponse: httpx.Response
+            self, request: Request, xresponse: httpx.Response
     ) -> Response:
         return Response(
             request=request,

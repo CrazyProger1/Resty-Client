@@ -99,8 +99,9 @@ from resty.clients.httpx import RESTClient
 async def main():
     client = RESTClient(httpx.AsyncClient(base_url="https://localhost:8000"))
 
-    response = await UserManager.create(
-        client=client,
+    manager = UserManager(client=client)
+
+    response = await manager.create(
         obj=UserCreateSchema(
             username="admin",
             email="admin@admin.com",
@@ -111,35 +112,35 @@ async def main():
     )
     print(response)  # id=1 username='admin' email='admin@admin.com' age=19
 
-    response = await UserManager.read(
-        client=client,
+    response = await manager.read(
         response_type=UserReadSchema,
     )
 
     for obj in response:
         print(obj)  # id=1 username='admin' email='admin@admin.com' age=19
 
-    response = await UserManager.read_one(
-        client=client,
+    response = await manager.read_one(
         obj_or_pk=1,
         response_type=UserReadSchema,
     )
 
     print(response)  # id=1 username='admin' email='admin@admin.com' age=19
 
-    response = await UserManager.update(
-        client=client,
-        obj=UserUpdateSchema(id=1, username="admin123", ),
+    response = await manager.update(
+        obj=UserUpdateSchema(
+            id=1,
+            username="admin123",
+        ),
         response_type=UserReadSchema,
     )
 
     print(response)  # id=1 username='admin123' email='admin@admin.com' age=19
 
-    await UserManager.delete(
-        client=client,
+    await manager.delete(
         obj_or_pk=1,
         expected_status=204,
     )
+
 
 
 if __name__ == "__main__":
@@ -148,7 +149,7 @@ if __name__ == "__main__":
 
 ## Status
 
-``0.0.5`` - **RELEASED**
+``0.0.6`` - **RELEASED**
 
 ## Licence
 

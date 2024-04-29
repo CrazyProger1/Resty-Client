@@ -38,66 +38,52 @@ class BaseManager(ABC):
     serializer_class: BaseSerializer
     url_builder_class: BaseURLBuilder
 
-    @classmethod
     @abstractmethod
-    def get_serializer(cls, **kwargs) -> type[BaseSerializer]: ...
+    def get_serializer(self, **kwargs) -> type[BaseSerializer]: ...
 
-    @classmethod
     @abstractmethod
-    def get_method(cls, endpoint: Endpoint, **kwargs) -> Method: ...
+    def get_method(self, endpoint: Endpoint, **kwargs) -> Method: ...
 
-    @classmethod
     @abstractmethod
-    def get_field(cls, field: Field) -> str: ...
+    def get_field(self, field: Field) -> str: ...
 
-    @classmethod
     @abstractmethod
-    def get_pk(cls, obj: Schema | Mapping) -> any: ...
+    def get_pk(self, obj: Schema | Mapping) -> any: ...
 
-    @classmethod
     @abstractmethod
     async def create[T: Schema](
-            cls,
-            client: BaseRESTClient,
+            self,
             obj: Schema | Mapping,
             response_type: ResponseType = None,
             **kwargs,
     ) -> T | None: ...
 
-    @classmethod
     @abstractmethod
     async def read[T: Schema](
-            cls,
-            client: BaseRESTClient,
+            self,
             response_type: ResponseType = None,
             **kwargs,
     ) -> Iterable[T]: ...
 
-    @classmethod
     @abstractmethod
     async def read_one[T: Schema](
-            cls,
-            client: BaseRESTClient,
+            self,
             obj_or_pk: Schema | Mapping | any,
             response_type: ResponseType = None,
             **kwargs,
     ) -> T: ...
 
-    @classmethod
     @abstractmethod
     async def update[T: Schema](
-            cls,
-            client: BaseRESTClient,
+            self,
             obj: Schema | Mapping,
             response_type: ResponseType = None,
             **kwargs,
     ) -> T | None: ...
 
-    @classmethod
     @abstractmethod
     async def delete[T: Schema](
-            cls,
-            client: BaseRESTClient,
+            self,
             obj_or_pk: Schema | Mapping | any,
             response_type: ResponseType = None,
             **kwargs,

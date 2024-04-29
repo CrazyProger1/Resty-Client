@@ -25,22 +25,19 @@ class URLBuilder(BaseURLBuilder):
         if not url:
             return ""
 
-        if not url.endswith('/'):
-            return url + '/'
+        if not url.endswith("/"):
+            return url + "/"
         return url
 
     @classmethod
     def build(
-            cls, endpoints: Endpoints, endpoint: Endpoint, base_url: str = None, **kwargs
+        cls, endpoints: Endpoints, endpoint: Endpoint, base_url: str = None, **kwargs
     ) -> str:
 
         endpoint_url = cls._get_endpoint_url(endpoints=endpoints, endpoint=endpoint)
 
         if endpoint_url:
-            url = urljoin(
-                cls._normalize_url(url=base_url),
-                endpoint_url
-            )
+            url = urljoin(cls._normalize_url(url=base_url), endpoint_url)
         else:
             url = base_url or ""
 
