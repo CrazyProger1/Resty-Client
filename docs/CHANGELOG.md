@@ -23,3 +23,32 @@
 - Improved test coverage to 100%
 - Improved architecture
 - Added examples
+
+## v0.0.6
+
+- Change Manager API:
+
+Now instantiating manager is required.
+
+You can pass the REST Client into the constructor:
+
+```python
+manager = UserManager(client=client)
+
+response = await manager.read(
+    response_type=UserReadSchema,
+)
+```
+
+or specify the client explicitly during calling:
+
+```python
+manager = UserManager()
+
+response = await manager.read(
+    response_type=UserReadSchema,
+    client=client,
+)
+```
+
+
