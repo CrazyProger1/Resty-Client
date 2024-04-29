@@ -23,9 +23,9 @@ class Manager(BaseManager):
             raise RuntimeError("Serializer not specified")
 
         if not (
-                isinstance(serializer, BaseSerializer)
-                or inspect.isclass(serializer)
-                and issubclass(serializer, BaseSerializer)
+            isinstance(serializer, BaseSerializer)
+            or inspect.isclass(serializer)
+            and issubclass(serializer, BaseSerializer)
         ):
             raise RuntimeError("The serializer must be a subclass of BaseSerializer")
 
@@ -125,7 +125,7 @@ class Manager(BaseManager):
         )
 
     def _handle_response(
-            self, response: Response, response_type: ResponseType, **kwargs
+        self, response: Response, response_type: ResponseType, **kwargs
     ) -> any:
         if not response:
             return
@@ -147,14 +147,14 @@ class Manager(BaseManager):
         return response.json
 
     async def create[
-    T: Schema
+        T: Schema
     ](
-            self,
-            obj: Schema | Mapping,
-            response_type: ResponseType = None,
-            **kwargs,
+        self,
+        obj: Schema | Mapping,
+        response_type: ResponseType = None,
+        **kwargs,
     ) -> (
-            T | None
+        T | None
     ):
         request = self._prepare_request(endpoint=Endpoint.CREATE, obj=obj, **kwargs)
         response = await self._make_request(request=request, **kwargs)
@@ -163,7 +163,7 @@ class Manager(BaseManager):
         )
 
     async def read[
-    T: Schema
+        T: Schema
     ](self, response_type: ResponseType = None, **kwargs) -> Iterable[T]:
         request = self._prepare_request(endpoint=Endpoint.READ, **kwargs)
         response = await self._make_request(request=request, **kwargs)
@@ -172,12 +172,12 @@ class Manager(BaseManager):
         )
 
     async def read_one[
-    T: Schema
+        T: Schema
     ](
-            self,
-            obj_or_pk: Schema | Mapping | any,
-            response_type: ResponseType = None,
-            **kwargs,
+        self,
+        obj_or_pk: Schema | Mapping | any,
+        response_type: ResponseType = None,
+        **kwargs,
     ) -> T:
 
         request = self._prepare_request(
@@ -189,14 +189,14 @@ class Manager(BaseManager):
         )
 
     async def update[
-    T: Schema
+        T: Schema
     ](
-            self,
-            obj: Schema | Mapping,
-            response_type: ResponseType = None,
-            **kwargs,
+        self,
+        obj: Schema | Mapping,
+        response_type: ResponseType = None,
+        **kwargs,
     ) -> (
-            T | None
+        T | None
     ):
         request = self._prepare_request(
             endpoint=Endpoint.UPDATE,
@@ -210,12 +210,12 @@ class Manager(BaseManager):
         )
 
     async def delete[
-    T: Schema
+        T: Schema
     ](
-            self,
-            obj_or_pk: Schema | Mapping | any,
-            response_type: ResponseType = None,
-            **kwargs,
+        self,
+        obj_or_pk: Schema | Mapping | any,
+        response_type: ResponseType = None,
+        **kwargs,
     ) -> (T | None):
         request = self._prepare_request(
             endpoint=Endpoint.DELETE, pk=self._get_pk(obj_or_pk=obj_or_pk), **kwargs

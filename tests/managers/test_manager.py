@@ -70,16 +70,16 @@ class ManagerWithPkField(Manager):
     "client, obj",
     [
         (
-                RESTClientMock(json={"username": "test"}, method=Method.POST),
-                UserCreate(username="test"),
+            RESTClientMock(json={"username": "test"}, method=Method.POST),
+            UserCreate(username="test"),
         ),
         (
-                RESTClientMock(json={"username": "321"}, method=Method.POST),
-                UserCreate(username="321"),
+            RESTClientMock(json={"username": "321"}, method=Method.POST),
+            UserCreate(username="321"),
         ),
         (
-                RESTClientMock(json={"username": "test"}, method=Method.POST),
-                {"username": "test"},
+            RESTClientMock(json={"username": "test"}, method=Method.POST),
+            {"username": "test"},
         ),
     ],
 )
@@ -94,9 +94,9 @@ async def test_create(client, obj):
     "data",
     [
         (
-                {"username": "test", "id": 1},
-                {"username": "test123", "id": 2},
-                {"username": "test321", "id": 3},
+            {"username": "test", "id": 1},
+            {"username": "test123", "id": 2},
+            {"username": "test321", "id": 3},
         ),
     ],
 )
@@ -121,15 +121,15 @@ async def test_read(data):
     "client, obj",
     [
         (
-                RESTClientMock(
-                    response=Response(
-                        Request("", Method.GET),
-                        status=200,
-                        json={"username": "test", "id": 123},
-                    ),
-                    method=Method.GET,
+            RESTClientMock(
+                response=Response(
+                    Request("", Method.GET),
+                    status=200,
+                    json={"username": "test", "id": 123},
                 ),
-                UserRead(username="test", id=123),
+                method=Method.GET,
+            ),
+            UserRead(username="test", id=123),
         ),
     ],
 )
@@ -137,8 +137,8 @@ async def test_read_one(client, obj):
     manager = UserManager()
 
     assert (
-            await manager.read_one(client=client, obj_or_pk=123, response_type=UserRead)
-            == obj
+        await manager.read_one(client=client, obj_or_pk=123, response_type=UserRead)
+        == obj
     )
 
 
@@ -147,16 +147,16 @@ async def test_read_one(client, obj):
     "client, obj",
     [
         (
-                RESTClientMock(
-                    response=Response(
-                        Request("", Method.GET),
-                        status=200,
-                        json={"username": "test", "id": 123},
-                    ),
-                    method=Method.PATCH,
-                    url="users/123",
+            RESTClientMock(
+                response=Response(
+                    Request("", Method.GET),
+                    status=200,
+                    json={"username": "test", "id": 123},
                 ),
-                UserUpdate(username="test", id=123),
+                method=Method.PATCH,
+                url="users/123",
+            ),
+            UserUpdate(username="test", id=123),
         ),
     ],
 )
@@ -172,8 +172,8 @@ async def test_update(client, obj):
     [
         (RESTClientMock(url="users/123", method=Method.DELETE), 123),
         (
-                RESTClientMock(url="users/321", method=Method.DELETE),
-                UserRead(username="test", id=321),
+            RESTClientMock(url="users/321", method=Method.DELETE),
+            UserRead(username="test", id=321),
         ),
     ],
 )
@@ -265,14 +265,14 @@ async def test_passing_url(url):
         ({"username": "test"}, dict, {"username": "test"}),
         (("username", "test"), list, ["username", "test"]),
         (
-                {"username": "test", "id": 123},
-                lambda r: dict.keys(r.json),
-                dict.keys({"username": "test", "id": 123}),
+            {"username": "test", "id": 123},
+            lambda r: dict.keys(r.json),
+            dict.keys({"username": "test", "id": 123}),
         ),
         (
-                {"username": "test", "id": 123},
-                lambda r, t: dict.keys(r),
-                {"username": "test", "id": 123},
+            {"username": "test", "id": 123},
+            lambda r, t: dict.keys(r),
+            {"username": "test", "id": 123},
         ),
     ],
 )
@@ -310,6 +310,4 @@ async def test_passing_invalid_client(client):
     manager = UserManager()
 
     with pytest.raises(TypeError):
-        await manager.read(
-            client=client
-        )
+        await manager.read(client=client)

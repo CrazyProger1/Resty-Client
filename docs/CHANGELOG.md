@@ -26,7 +26,7 @@
 
 ## v0.0.6
 
-- Change Manager API:
+- Changed Manager API:
 
 Now instantiating manager is required.
 
@@ -50,5 +50,10 @@ response = await manager.read(
     client=client,
 )
 ```
+
+- Added Django pagination middlewares:
+
+  - `LimitOffsetPaginationMiddleware`
+  - `PagePaginationMiddleware`
 
 
