@@ -15,17 +15,17 @@ class Manager(BaseManager):
 
     @classmethod
     def get_serializer(cls, **kwargs) -> type[BaseSerializer]:
-        serializer = kwargs.pop('serializer', cls.serializer_class)
+        serializer = kwargs.pop("serializer", cls.serializer_class)
 
         if not serializer:
-            raise RuntimeError('Serializer not specified')
+            raise RuntimeError("Serializer not specified")
 
         if not (
-                isinstance(serializer, BaseSerializer)
-                or inspect.isclass(serializer)
-                and issubclass(serializer, BaseSerializer)
+            isinstance(serializer, BaseSerializer)
+            or inspect.isclass(serializer)
+            and issubclass(serializer, BaseSerializer)
         ):
-            raise RuntimeError('The serializer must be a subclass of BaseSerializer')
+            raise RuntimeError("The serializer must be a subclass of BaseSerializer")
 
         return serializer
 
@@ -33,7 +33,7 @@ class Manager(BaseManager):
     def get_method(cls, endpoint: Endpoint, **kwargs) -> Method:
         method = cls.methods.get(endpoint)
         if not method:
-            raise RuntimeError(f'Method not specified for endpoint: {endpoint}')
+            raise RuntimeError(f"Method not specified for endpoint: {endpoint}")
 
         return method
 
@@ -42,7 +42,7 @@ class Manager(BaseManager):
         field = cls.fields.get(field)
 
         if not field:
-            raise RuntimeError(f'Field not specified: {field}')
+            raise RuntimeError(f"Field not specified: {field}")
 
         return field
 
@@ -79,8 +79,8 @@ class Manager(BaseManager):
 
     @classmethod
     def _prepare_url(cls, endpoint: Endpoint, **kwargs) -> str:
-        url = kwargs.pop('url', None)
-        base_url = kwargs.pop('base_url', None)
+        url = kwargs.pop("url", None)
+        base_url = kwargs.pop("base_url", None)
 
         if isinstance(url, str):
             return url
@@ -89,12 +89,12 @@ class Manager(BaseManager):
             endpoints=cls.endpoints,
             endpoint=endpoint,
             base_url=base_url or cls.url,
-            **kwargs
+            **kwargs,
         )
 
     @classmethod
     def _prepare_json(cls, **kwargs):
-        obj = kwargs.pop('obj', None)
+        obj = kwargs.pop("obj", None)
 
         if isinstance(obj, dict | list | set | tuple):
             return obj
@@ -108,18 +108,20 @@ class Manager(BaseManager):
             url=cls._prepare_url(endpoint=endpoint, **kwargs),
             method=cls.get_method(endpoint, **kwargs),
             endpoint=endpoint,
-            data=kwargs.pop('data', {}),
+            data=kwargs.pop("data", {}),
             json=cls._prepare_json(**kwargs),
-            timeout=kwargs.pop('timeout', None),
-            params=kwargs.pop('params', {}),
-            headers=kwargs.pop('headers', {}),
-            cookies=kwargs.pop('cookies', {}),
-            redirects=kwargs.pop('redirects', False),
+            timeout=kwargs.pop("timeout", None),
+            params=kwargs.pop("params", {}),
+            headers=kwargs.pop("headers", {}),
+            cookies=kwargs.pop("cookies", {}),
+            redirects=kwargs.pop("redirects", False),
             middleware_options=kwargs.copy(),
         )
 
     @classmethod
-    def _handle_response(cls, response: Response, response_type: ResponseType, **kwargs) -> any:
+    def _handle_response(
+        cls, response: Response, response_type: ResponseType, **kwargs
+    ) -> any:
         if not response:
             return
 
@@ -127,7 +129,9 @@ class Manager(BaseManager):
             if issubclass(response_type, dict | list | tuple | set):
                 return response_type(response.json)
             elif issubclass(response_type, Schema):
-                return cls._deserialize(schema=response_type, data=response.json, **kwargs)
+                return cls._deserialize(
+                    schema=response_type, data=response.json, **kwargs
+                )
 
         if callable(response_type):
             try:
@@ -138,50 +142,87 @@ class Manager(BaseManager):
         return response.json
 
     @classmethod
-    async def create[T: Schema](cls, client: BaseRESTClient, obj: Schema | Mapping, response_type: ResponseType = None,
-                                **kwargs) -> T | None:
+    async def create[
+        T: Schema
+    ](
+        cls,
+        client: BaseRESTClient,
+        obj: Schema | Mapping,
+        response_type: ResponseType = None,
+        **kwargs,
+    ) -> (T | None):
         request = cls._prepare_request(endpoint=Endpoint.CREATE, obj=obj, **kwargs)
         response = await cls._make_request(client=client, request=request)
-        return cls._handle_response(response=response, response_type=response_type, **kwargs)
+        return cls._handle_response(
+            response=response, response_type=response_type, **kwargs
+        )
 
     @classmethod
-    async def read[T: Schema](cls, client: BaseRESTClient, response_type: ResponseType = None, **kwargs) -> Iterable[T]:
+    async def read[
+        T: Schema
+    ](
+        cls, client: BaseRESTClient, response_type: ResponseType = None, **kwargs
+    ) -> Iterable[T]:
         request = cls._prepare_request(endpoint=Endpoint.READ, **kwargs)
         response = await cls._make_request(client=client, request=request)
-        return cls._handle_response(response=response, response_type=response_type, **kwargs)
+        return cls._handle_response(
+            response=response, response_type=response_type, **kwargs
+        )
 
     @classmethod
-    async def read_one[T: Schema](cls, client: BaseRESTClient, obj_or_pk: Schema | Mapping | any,
-                                  response_type: ResponseType = None, **kwargs) -> T:
+    async def read_one[
+        T: Schema
+    ](
+        cls,
+        client: BaseRESTClient,
+        obj_or_pk: Schema | Mapping | any,
+        response_type: ResponseType = None,
+        **kwargs,
+    ) -> T:
 
         request = cls._prepare_request(
-            endpoint=Endpoint.READ_ONE,
-            pk=cls._get_pk(obj_or_pk=obj_or_pk),
-            **kwargs
+            endpoint=Endpoint.READ_ONE, pk=cls._get_pk(obj_or_pk=obj_or_pk), **kwargs
         )
         response = await cls._make_request(client=client, request=request)
-        return cls._handle_response(response=response, response_type=response_type, **kwargs)
+        return cls._handle_response(
+            response=response, response_type=response_type, **kwargs
+        )
 
     @classmethod
-    async def update[T: Schema](cls, client: BaseRESTClient, obj: Schema | Mapping, response_type: ResponseType = None,
-                                **kwargs) -> T | None:
+    async def update[
+        T: Schema
+    ](
+        cls,
+        client: BaseRESTClient,
+        obj: Schema | Mapping,
+        response_type: ResponseType = None,
+        **kwargs,
+    ) -> (T | None):
         request = cls._prepare_request(
             endpoint=Endpoint.UPDATE,
-            pk=kwargs.pop('pk', cls.get_pk(obj)),
+            pk=kwargs.pop("pk", cls.get_pk(obj)),
             obj=obj,
-            **kwargs
+            **kwargs,
         )
         response = await cls._make_request(client=client, request=request)
-        return cls._handle_response(response=response, response_type=response_type, **kwargs)
+        return cls._handle_response(
+            response=response, response_type=response_type, **kwargs
+        )
 
     @classmethod
-    async def delete[T: Schema](cls, client: BaseRESTClient, obj_or_pk: Schema | Mapping | any,
-                                response_type: ResponseType = None,
-                                **kwargs) -> T | None:
+    async def delete[
+        T: Schema
+    ](
+        cls,
+        client: BaseRESTClient,
+        obj_or_pk: Schema | Mapping | any,
+        response_type: ResponseType = None,
+        **kwargs,
+    ) -> (T | None):
         request = cls._prepare_request(
-            endpoint=Endpoint.DELETE,
-            pk=cls._get_pk(obj_or_pk=obj_or_pk),
-            **kwargs
+            endpoint=Endpoint.DELETE, pk=cls._get_pk(obj_or_pk=obj_or_pk), **kwargs
         )
         response = await cls._make_request(client=client, request=request)
-        return cls._handle_response(response=response, response_type=response_type, **kwargs)
+        return cls._handle_response(
+            response=response, response_type=response_type, **kwargs
+        )

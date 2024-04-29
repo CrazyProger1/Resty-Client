@@ -17,7 +17,7 @@ class RESTClientMock(BaseRESTClient):  # pragma: nocover
 
 
 @pytest.fixture
-def client(request): # pragma: nocover
+def client(request):  # pragma: nocover
     response, expected = request.param
 
     return RESTClientMock(

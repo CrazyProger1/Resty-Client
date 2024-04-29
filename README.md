@@ -99,7 +99,9 @@ from resty.clients.httpx import RESTClient
 async def main():
     client = RESTClient(httpx.AsyncClient(base_url="https://localhost:8000"))
 
-    response = await UserManager.create(
+    manager = UserManager()
+
+    response = await manager.create(
         client=client,
         obj=UserCreateSchema(
             username="admin",
@@ -111,7 +113,7 @@ async def main():
     )
     print(response)  # id=1 username='admin' email='admin@admin.com' age=19
 
-    response = await UserManager.read(
+    response = await manager.read(
         client=client,
         response_type=UserReadSchema,
     )
@@ -119,7 +121,7 @@ async def main():
     for obj in response:
         print(obj)  # id=1 username='admin' email='admin@admin.com' age=19
 
-    response = await UserManager.read_one(
+    response = await manager.read_one(
         client=client,
         obj_or_pk=1,
         response_type=UserReadSchema,
@@ -127,7 +129,7 @@ async def main():
 
     print(response)  # id=1 username='admin' email='admin@admin.com' age=19
 
-    response = await UserManager.update(
+    response = await manager.update(
         client=client,
         obj=UserUpdateSchema(id=1, username="admin123", ),
         response_type=UserReadSchema,
@@ -135,7 +137,7 @@ async def main():
 
     print(response)  # id=1 username='admin123' email='admin@admin.com' age=19
 
-    await UserManager.delete(
+    await manager.delete(
         client=client,
         obj_or_pk=1,
         expected_status=204,
